@@ -1,46 +1,48 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Modal } from '@/components/Modal';
-import { Button } from '@/components/Button';
-import { useModal } from '@/hooks/useModal';
+import React from 'react';
+import { View, FlatList, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { useTheme } from '../contexts/ThemeContext';
+import { useCurrency, currencies } from '../contexts/CurrencyContext';
+import { router } from 'expo-router';
 
-export default function CurrencySelectModal() {
-  const { closeModal } = useModal();
-  const [selectedCurrency, setSelectedCurrency] = useState('USD');
+export default function CurrencySelect() {
+  const { theme } = useTheme();
+  const { setCurrency } = useCurrency();
 
-  const handleSelectCurrency = (currency: string) => {
-    setSelectedCurrency(currency);
-    closeModal('currencySelect');
+  const handleSelect = (currency: { code: string; symbol: string }) => {
+    setCurrency(currency);
+    router.back();
   };
 
   return (
-    <Modal identifier="currencySelect">
-      <View style={styles.container}>
-        <Text style={styles.title}>Select Currency</Text>
-        <Button 
-          title="USD" 
-          onPress={() => handleSelectCurrency('USD')} 
-        />
-        <Button 
-          title="EUR" 
-          onPress={() => handleSelectCurrency('EUR')} 
-        />
-        <Button 
-          title="Cancel" 
-          onPress={() => closeModal('currencySelect')} 
-        />
-      </View>
-    </Modal>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <FlatList
+        data={currencies}
+        keyExtractor={(item) => item.code}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[styles.item, { backgroundColor: theme.surface }]}
+            onPress={() => handleSelect(item)}
+          >
+            <Text style={[styles.text, { color: theme.text.primary }]}>
+              {item.code} ({item.symbol})
+            </Text>
+          </TouchableOpacity>
+        )}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  item: {
     padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
+  text: {
+    fontSize: 16,
   },
-});
+}); 

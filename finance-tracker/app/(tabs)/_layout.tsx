@@ -1,42 +1,51 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../contexts/ThemeContext';
 
-export default function TabLayout() {
+export default function TabsLayout() {
+  const { theme } = useTheme();
+
   return (
-    <Tabs 
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: 'blue',
-        tabBarInactiveTintColor: 'gray',
-      }}
-    >
-      <Tabs.Screen 
-        name="home" 
+    <Tabs screenOptions={{ 
+      tabBarActiveTintColor: theme.primary,
+      tabBarInactiveTintColor: theme.text.secondary,
+      tabBarStyle: {
+        backgroundColor: theme.surface,
+        borderTopColor: theme.border,
+      },
+      headerStyle: {
+        backgroundColor: theme.surface,
+      },
+      headerTintColor: theme.text.primary,
+    }}>
+      <Tabs.Screen
+        name="home"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="home" color={color} size={24} />
-          )
-        }} 
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home" size={size} color={color} />
+          ),
+        }}
       />
-      <Tabs.Screen 
-        name="transactions" 
+      <Tabs.Screen
+        name="transactions"
         options={{
           title: 'Transactions',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="list" color={color} size={24} />
-          )
-        }} 
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="list" size={size} color={color} />
+          ),
+        }}
       />
-      <Tabs.Screen 
-        name="settings" 
+      <Tabs.Screen
+        name="settings"
         options={{
           title: 'Settings',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="settings" color={color} size={24} />
-          )
-        }} 
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings" size={size} color={color} />
+          ),
+        }}
       />
     </Tabs>
   );
-}
+} 
