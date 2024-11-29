@@ -7,6 +7,7 @@ import { useCurrency } from '../../contexts/CurrencyContext';
 import Chart from '../../components/Chart';
 import TransactionItem from '../../components/TransactionItem';
 import { useRouter } from 'expo-router';
+import Transactions from './transactions';
 
 export default function Home() {
   const { theme } = useTheme();
@@ -77,8 +78,8 @@ export default function Home() {
         </View>
       </View>
 
-          {/* Chart Section */}
-          <Chart /> 
+           {/* Chart Section  */}
+          <Chart/> 
 
 
       {/* Add Transaction Button */}
