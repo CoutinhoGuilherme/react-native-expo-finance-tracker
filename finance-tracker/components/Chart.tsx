@@ -1,16 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, Pressable } from 'react-native';
-import { VictoryPie, VictoryLabel } from 'victory-native';
+import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import PieChart from 'react-native-pie-chart';
 import { useTransactions } from '../contexts/TransactionContext';
 import { useTheme } from '../contexts/ThemeContext';
-
-const screenWidth = Dimensions.get('window').width;
-
-interface ChartData {
-  name: string;
-  amount: number;
-  color: string;
-}
 
 export default function Chart() {
   const { transactions } = useTransactions();
@@ -19,10 +11,10 @@ export default function Chart() {
 
   const CHART_COLORS = {
     income: '#4CAF50',
-    expenses: '#F44336'
+    expenses: '#F44336',
   };
 
-  // Calculate total income and expenses
+  // Calcular os totais de receita e despesas com verificação de valores
   const totals = transactions.reduce(
     (acc, transaction) => {
       if (transaction.amount > 0) {
@@ -35,133 +27,74 @@ export default function Chart() {
     { income: 0, expenses: 0 }
   );
 
-  // Calculate total for percentage
-  const total = totals.income + totals.expenses;
+  const income = totals.income || 0;
+  const expenses = totals.expenses || 0;
 
-  // Format data for the chart
-  const data: ChartData[] = [
-    { name: 'Income', amount: totals.income || 0.01, color: CHART_COLORS.income },
-    { name: 'Expenses', amount: totals.expenses || 0.01, color: CHART_COLORS.expenses }
-  ];
+  // Garantir que a soma dos valores seja maior que 0
+  if (income + expenses === 0) {
+    return (
+      <ScrollView style={{ flex: 1 }}>
+        <View style={[styles.container, { backgroundColor: theme.surface }]}>
+          <Text style={[styles.title, { color: theme.text.primary }]}>
+            Não há transações suficientes para exibir o gráfico.
+          </Text>
+        </View>
+      </ScrollView>
+    );
+  }
 
-  const handleSlicePress = (name: string) => {
-    setSelectedSlice(selectedSlice === name ? null : name);
-  };
+  const series = [income, expenses];
+  const sliceColor = [CHART_COLORS.income, CHART_COLORS.expenses];
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.surface }]}>
-      <View style={styles.chartContainer}>
-        <VictoryPie
-          data={data}
-          x="name"
-          y="amount"
-          width={screenWidth * 0.7}
-          height={180}
-          padding={40}
-          innerRadius={35}
-          labelRadius={({ innerRadius }) => (typeof innerRadius === 'number' ? innerRadius + 30 : 30)}
-          cornerRadius={6}
-          colorScale={Object.values(CHART_COLORS)}
-          animate={{
-            duration: 800,
-            easing: "cubic"
-          }}
-          style={{
-            labels: { 
-              fill: theme.text.primary,
-              fontSize: 14,
-              fontWeight: 'bold'
-            },
-            data: {
-              filter: `drop-shadow(0px 2px 4px ${theme.text.primary}15)`,
-              opacity: ({ datum }) => selectedSlice ? (selectedSlice === datum.name ? 1 : 0.6) : 1,
-            }
-          }}
-          labels={({ datum }) => {
-            const percentage = ((datum.amount / total) * 100).toFixed(0);
-            return `${percentage}%`;
-          }}
-          labelComponent={
-            <VictoryLabel
-              style={{
-                fill: theme.text.primary,
-                fontSize: 14,
-                fontWeight: 'bold'
-              }}
-            />
-          }
-          events={[{
-            target: "data",
-            eventHandlers: {
-              onPress: () => [{
-                target: "data",
-                mutation: (props) => handleSlicePress(props.datum.name)
-              }]
-            }
-          }]}
+    <ScrollView style={{ flex: 1 }}>
+      <View style={[styles.container, { backgroundColor: theme.surface }]}>
+        <Text style={[styles.title, { color: theme.text.primary }]}>Basic Pie Chart</Text>
+        <PieChart
+          widthAndHeight={250}
+          series={series}
+          sliceColor={sliceColor}
         />
+        <View style={styles.legendContainer}>
+          {['Income', 'Expenses'].map((label, index) => (
+            <View key={index} style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: sliceColor[index] }]} />
+              <Text style={[styles.legendText, { color: theme.text.primary }]}>{label}</Text>
+            </View>
+          ))}
+        </View>
       </View>
-
-      {/* Simplified Legend */}
-      <View style={styles.legendContainer}>
-        {data.map((item) => (
-          <Pressable
-            key={item.name}
-            style={[
-              styles.legendItem,
-              selectedSlice === item.name && styles.legendItemSelected
-            ]}
-            onPress={() => handleSlicePress(item.name)}
-          >
-            <View style={[styles.legendDot, { backgroundColor: item.color }]} />
-            <Text style={[styles.legendText, { color: theme.text.primary }]}>
-              {item.name}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 16,
-    borderRadius: 20,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-  },
-  chartContainer: {
+    flex: 1,
     alignItems: 'center',
-    paddingTop: 16,
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  title: {
+    fontSize: 24,
+    margin: 10,
   },
   legendContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 24,
-    paddingVertical: 16,
+    marginTop: 16,
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  legendItemSelected: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
+    marginHorizontal: 8,
   },
   legendDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 6,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 8,
   },
   legendText: {
     fontSize: 14,
-    fontWeight: '500',
   },
-}); 
+});
