@@ -36,7 +36,7 @@ export default function Chart() {
       <ScrollView style={{ flex: 1 }}>
         <View style={[styles.container, { backgroundColor: theme.surface }]}>
           <Text style={[styles.title, { color: theme.text.primary }]}>
-            Não há transações suficientes para exibir o gráfico.
+            There aren't any transactions to be shown.
           </Text>
         </View>
       </ScrollView>

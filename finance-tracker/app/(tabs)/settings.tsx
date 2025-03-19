@@ -60,6 +60,16 @@ export default function Settings() {
           >
             <Ionicons name="chevron-forward" size={20} color={theme.text.secondary} />
           </SettingItem>
+
+          {/* Criar feature para selecionar idioma */}
+          <SettingItem
+            icon={{ name: 'globe', bg: '#002147' }}
+            title="Language"
+            subtitle={currency.code}
+            onPress={() => router.push('/currencySelect')}
+          >
+            <Ionicons name="chevron-forward" size={20} color={theme.text.secondary} />
+          </SettingItem>
         </View>
       </View>
 

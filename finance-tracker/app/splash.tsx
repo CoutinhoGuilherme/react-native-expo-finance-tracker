@@ -39,7 +39,7 @@ export default function SplashScreen() {
         <View style={styles.logoContainer}>
           <Ionicons name="wallet" size={100} color="#fff" />
         </View>
-        <Text style={styles.title}>BudgetN</Text>
+        <Text style={styles.title}>FinWise</Text>
         <Text style={styles.subtitle}>Smart Money Management</Text>
       </Animated.View>
     </View>
