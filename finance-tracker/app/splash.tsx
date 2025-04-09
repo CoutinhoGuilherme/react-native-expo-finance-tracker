@@ -27,7 +27,7 @@ export default function SplashScreen() {
     opacity.value = withTiming(1, { duration: 1000 });
 
     const timer = setTimeout(() => {
-      router.replace('/(tabs)/home');
+      router.replace('/StartScreen');
     }, 2000);
 
     return () => clearTimeout(timer);

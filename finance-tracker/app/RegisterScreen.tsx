@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { Text } from "react-native-paper";
+import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
+// import { Text } from "react-native-paper";
 import { useRouter } from "expo-router";
 import Background from "../components/Background";
 import Logo from "../components/Logo";
@@ -12,6 +12,18 @@ import { theme } from "../contexts/ThemeContext";
 import { emailValidator } from "../helpers/emailValidator";
 import { passwordValidator } from "../helpers/passwordValidator";
 import { nameValidator } from "../helpers/nameValidator";
+import { useTheme } from '../contexts/ThemeContext';
+import { Ionicons } from '@expo/vector-icons';
+import Animated, { 
+  withSpring, 
+  useAnimatedStyle, 
+  useSharedValue,
+  withSequence,
+  withTiming,
+  runOnJS
+} from 'react-native-reanimated';
+import Paragraph from "../components/Paragraph";
+
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -29,17 +41,19 @@ export default function RegisterScreen() {
       setPassword({ ...password, error: passwordError });
       return;
     }
-    router.reset({
-      index: 0,
-      routes: [{ name: "HomeScreen" }],
-    });
+    router.replace('/(tabs)/home');
   };
 
   return (
     <Background>
       <BackButton goBack={router.goBack} />
-      <Logo />
-      <Header>Welcome.</Header>
+      <View style={styles.logoContainer}>
+        <Ionicons name="wallet" size={100} color="#fff" />
+      </View>
+            <Header style={styles.title}>FinWise</Header>
+            <Paragraph style={styles.subtitle}>
+            Smart Money Management
+            </Paragraph>
       <TextInput
         label="Name"
         returnKeyType="next"
@@ -70,11 +84,11 @@ export default function RegisterScreen() {
         secureTextEntry
       />
       <Button
+        style={{ backgroundColor: '#1e3a8a' }} 
         mode="contained"
         onPress={onSignUpPressed}
-        style={{ marginTop: 24 }}
       >
-        Next
+        Create account
       </Button>
       <View style={styles.row}>
         <Text>I already have an account !</Text>
@@ -89,12 +103,28 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
+  logoContainer: {
+    marginBottom: 20,
+  },
   row: {
     flexDirection: "row",
     marginTop: 4,
   },
   link: {
     fontWeight: "bold",
-    color: theme.colors.primary,
+    color: "#fff",
+  },
+  title: {
+    fontSize: 42,
+    fontWeight: 'bold',
+    color: '#fff',
+    // marginBottom: 10,
+    letterSpacing: 1,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: 'rgba(255,255,255,0.8)',
+    letterSpacing: 0.5,
+    marginBottom: 50,
   },
 });

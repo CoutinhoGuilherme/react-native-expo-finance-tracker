@@ -5,7 +5,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 
-import { theme } from "../contexts/ThemeContext";
+import { darkTheme, theme } from "../contexts/ThemeContext";
 
 type Props = {
   children: ReactNode;
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     width: "100%",
-    backgroundColor: theme.colors.surface,
+    backgroundColor: darkTheme.primary,
   },
   container: {
     flex: 1,

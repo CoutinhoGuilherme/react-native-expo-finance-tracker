@@ -9,7 +9,7 @@ export default function TextInput({ errorText, description, ...props }) {
     <View style={styles.container}>
       <Input
         style={styles.input}
-        selectionColor={theme.colors.primary}
+        selectionColor={styles.selectedColor}
         underlineColor="transparent"
         mode="outlined"
         {...props}
@@ -29,6 +29,9 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: theme.colors.surface,
+  },
+  selectedColor: {
+    color: "#1e3a8a",
   },
   description: {
     fontSize: 13,
