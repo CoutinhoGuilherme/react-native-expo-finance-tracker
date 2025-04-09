@@ -5,6 +5,7 @@ import { TransactionProvider } from '../contexts/TransactionContext';
 import { CurrencyProvider } from '../contexts/CurrencyContext';
 import { StyleSheet } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
+import { AuthProvider } from '@/contexts/AuthenticationContext';
 
 // Create a separate component for Stack configuration
 function StackNavigator() {
@@ -12,6 +13,30 @@ function StackNavigator() {
   
   return (
     <Stack>
+      <Stack.Screen 
+        name="LoginScreen" 
+        options={{ 
+          headerShown: false 
+        }} 
+      />
+      <Stack.Screen 
+        name="RegisterScreen" 
+        options={{ 
+          headerShown: false 
+        }} 
+      />
+      <Stack.Screen 
+        name="ResetPasswordScreen" 
+        options={{ 
+          headerShown: false 
+        }} 
+      />
+      <Stack.Screen 
+        name="StartScreen" 
+        options={{ 
+          headerShown: false 
+        }} 
+      />
       <Stack.Screen 
         name="splash" 
         options={{ 
@@ -69,6 +94,7 @@ function StackNavigator() {
 
 export default function RootLayout() {
   return (
+  <AuthProvider> 
     <GestureHandlerRootView style={styles.container}>
       <ThemeProvider>
         <TransactionProvider>
@@ -78,6 +104,7 @@ export default function RootLayout() {
         </TransactionProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
+  </AuthProvider>
   );
 }
 

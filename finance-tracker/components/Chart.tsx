@@ -49,7 +49,7 @@ export default function Chart() {
   return (
     <ScrollView style={{ flex: 1 }}>
       <View style={[styles.container, { backgroundColor: theme.surface }]}>
-        <Text style={[styles.title, { color: theme.text.primary }]}>Basic Pie Chart</Text>
+        <Text style={[styles.title, { color: theme.text.primary }]}>Chart</Text>
         <PieChart
           widthAndHeight={250}
           series={series}
