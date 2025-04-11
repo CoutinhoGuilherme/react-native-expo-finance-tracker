@@ -19,9 +19,9 @@ Um aplicativo de controle financeiro pessoal, desenvolvido com React Native (Exp
 |-------|-------|----------|------------------|
 | <img src="Screenshots/start.jpeg" width="150"/> | <img src="Screenshots/login.jpeg" width="150"/> | <img src="Screenshots/register.jpeg" width="150"/> | <img src="Screenshots/resetpassword.jpeg" width="150"/> |
 
-| Home | Transações | Nova Despesa | Nova Receita |
+| Home | Transações | Nova Transação | Configurações |
 |------|------------|---------------|--------------|
-| <img src="Screenshots/home.jpeg" width="150"/> | <img src="Screenshots/transactions.jpeg" width="150"/> | <img src="Screenshots/addtransactionsexpenses.jpeg" width="150"/> | <img src="Screenshots/addtransactionsincome.jpeg" width="150"/> |
+| <img src="Screenshots/home.jpeg" width="150"/> | <img src="Screenshots/transactions.jpeg" width="150"/> | <img src="Screenshots/addtransactionsincome.jpeg" width="150"/> | <img src="Screenshots/settings.jpeg.jpeg" width="150"/> |
 
 ## 🚀 Tecnologias Utilizadas
 
