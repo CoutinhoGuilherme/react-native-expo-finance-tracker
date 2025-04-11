@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../contexts/ThemeContext';
 import { ThemeToggle } from '../../components/ThemeToggle';
 import { useCurrency } from '../../contexts/CurrencyContext';
+import { useLanguage } from '../../contexts/LanguageContext'; // importe o contexto de idioma
+
 
 type SettingItemProps = {
   icon: { 
@@ -19,6 +21,8 @@ type SettingItemProps = {
 export default function Settings() {
   const { theme } = useTheme();
   const { currency } = useCurrency();
+  const { language } = useLanguage(); // obter o idioma atual
+
 
   const SettingItem = ({ icon, title, subtitle, onPress, children }: SettingItemProps) => (
     <Pressable
@@ -47,13 +51,13 @@ export default function Settings() {
         <Text style={[styles.sectionTitle, { color: theme.text.secondary }]}>Preferences</Text>
         <View style={[styles.sectionContent, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <SettingItem
-            icon={{ name: 'moon', bg: '#607D8B' }}
+            icon={{ name: 'moon-outline', bg: '#607D8B' }}
             title="Dark Mode"
           >
             <ThemeToggle />
           </SettingItem>
           <SettingItem
-            icon={{ name: 'cash', bg: '#FF9800' }}
+            icon={{ name: 'cash-outline', bg: '#008000' }}
             title="Currency"
             subtitle={currency.code}
             onPress={() => router.push('/currencySelect')}
@@ -63,10 +67,10 @@ export default function Settings() {
 
           {/* Criar feature para selecionar idioma */}
           <SettingItem
-            icon={{ name: 'globe', bg: '#002147' }}
+            icon={{ name: 'globe-outline', bg: '#002147' }}
             title="Language"
-            subtitle={currency.code}
-            onPress={() => router.push('/currencySelect')}
+            subtitle={`${language.flag} ${language.nativeName || language.name}`}
+            onPress={() => router.push('/languageSelect')}
           >
             <Ionicons name="chevron-forward" size={20} color={theme.text.secondary} />
           </SettingItem>
@@ -78,14 +82,14 @@ export default function Settings() {
         <Text style={[styles.sectionTitle, { color: theme.text.secondary }]}>Legal</Text>
         <View style={[styles.sectionContent, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <SettingItem
-            icon={{ name: 'document-text', bg: '#795548' }}
+            icon={{ name: 'document-text-outline', bg: '#795548' }}
             title="Terms & Conditions"
             onPress={() => router.push('/policyModal?type=terms')}
           >
             <Ionicons name="chevron-forward" size={20} color={theme.text.secondary} />
           </SettingItem>
           <SettingItem
-            icon={{ name: 'shield-checkmark', bg: '#4CAF50' }}
+            icon={{ name: 'shield-checkmark-outline', bg: '#4CAF50' }}
             title="Privacy Policy"
             onPress={() => router.push('/policyModal?type=privacy')}
           >
@@ -99,10 +103,22 @@ export default function Settings() {
         <Text style={[styles.sectionTitle, { color: theme.text.secondary }]}>About</Text>
         <View style={[styles.sectionContent, { backgroundColor: theme.surface, borderColor: theme.border }]}>
           <SettingItem
-            icon={{ name: 'information-circle', bg: '#607D8B' }}
+            icon={{ name: 'information-circle-outline', bg: '#607D8B' }}
             title="App Version"
             subtitle="1.0.0"
           />
+        </View>
+      </View>
+
+      {/* About Section */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.text.secondary }]}></Text>
+        <View style={[styles.sectionContent, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+          <SettingItem
+            icon={{ name: 'log-out-outline', bg: '#607D8B' }}
+            title="Log out"
+            // subtitle="1.0.0"
+          />         
         </View>
       </View>
     </ScrollView>

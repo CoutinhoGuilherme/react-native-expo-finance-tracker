@@ -3,6 +3,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { TransactionProvider } from '../contexts/TransactionContext';
 import { CurrencyProvider } from '../contexts/CurrencyContext';
+import { LanguageProvider } from '../contexts/LanguageContext';
 import { StyleSheet } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { AuthProvider } from '@/contexts/AuthenticationContext';
@@ -76,6 +77,19 @@ function StackNavigator() {
         }} 
       />
       <Stack.Screen 
+        name="languageSelect" 
+        options={{
+          presentation: 'modal',
+          headerShown: true,
+          headerTitle: 'Select Language',
+          headerStyle: {
+            backgroundColor: theme.surface,
+          },
+          headerTintColor: theme.text.primary,
+          headerShadowVisible: false,
+        }} 
+      />
+      <Stack.Screen 
         name="policyModal" 
         options={{
           presentation: 'modal',
@@ -99,7 +113,9 @@ export default function RootLayout() {
       <ThemeProvider>
         <TransactionProvider>
           <CurrencyProvider>
-            <StackNavigator />
+            <LanguageProvider>
+              <StackNavigator />
+            </LanguageProvider>
           </CurrencyProvider>
         </TransactionProvider>
       </ThemeProvider>

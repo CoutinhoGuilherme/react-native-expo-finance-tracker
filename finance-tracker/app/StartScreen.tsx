@@ -16,6 +16,7 @@ import Animated, {
   withTiming,
   runOnJS
 } from 'react-native-reanimated';
+import { StatusBar } from 'expo-status-bar';
 
 
 export default function StartScreen() {
@@ -24,6 +25,7 @@ export default function StartScreen() {
   
   return (
     <Background>
+      <StatusBar hidden />
         <View style={styles.logoContainer}>
           <Ionicons name="wallet" size={100} color="#fff" />
         </View>
