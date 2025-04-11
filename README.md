@@ -35,6 +35,6 @@ Um aplicativo de controle financeiro pessoal, desenvolvido com React Native (Exp
 Clone o repositório e instale as dependências:
 
 ```bash
-git clone https://github.com/SEU_USUARIO/finance-tracker.git
+git clone https://github.com/CoutinhoGuilherme/react-native-expo-finance-tracker
 cd finance-tracker
 npm install
