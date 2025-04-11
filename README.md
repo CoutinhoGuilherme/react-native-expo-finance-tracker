@@ -1,4 +1,4 @@
-# 💰 Finance Tracker
+# 💰 FinWise
 
 Um aplicativo de controle financeiro pessoal, desenvolvido com React Native (Expo). Permite ao usuário registrar, visualizar e gerenciar suas finanças de maneira simples e eficiente.
 
@@ -16,8 +16,14 @@ Um aplicativo de controle financeiro pessoal, desenvolvido com React Native (Exp
 ## 🖼️ Preview
 
 <p align="center">
-  <img src="assets/screenshots/dashboard.png" width="250" />
-  <img src="assets/screenshots/transactions.png" width="250" />
+  <img src="Screenshots/start.jpeg" width="250" />
+  <img src="Screenshots/login.jpeg" width="250" />
+  <img src="Screenshots/register.jpeg" width="250" />
+  <img src="Screenshots/resetpassword.jpeg" width="250" />
+  <img src="Screenshots/home.jpeg" width="250" />
+  <img src="Screenshots/transactions.jpeg" width="250" />
+  <img src="Screenshots/addtransactionsexpenses.jpeg" width="250" />
+  <img src="Screenshots/addtransactionsincome.jpeg" width="250" />
 </p>
 
 ## 🚀 Tecnologias Utilizadas
