@@ -15,27 +15,13 @@ Um aplicativo de controle financeiro pessoal, desenvolvido com React Native (Exp
   
 ## 🖼️ Preview
 
-<p align="center">
-  <img src="Screenshots/start.jpeg" width="120" />
-  <img src="Screenshots/login.jpeg" width="120" />
-  <img src="Screenshots/register.jpeg" width="120" />
-  <img src="Screenshots/resetpassword.jpeg" width="120" />
-  <img src="Screenshots/home.jpeg" width="120" />
-  <img src="Screenshots/transactions.jpeg" width="120" />
-  <img src="Screenshots/addtransactionsexpenses.jpeg" width="120" />
-  <img src="Screenshots/addtransactionsincome.jpeg" width="120" />
-</p>
+| Início | Login | Cadastro | Redefinir Senha |
+|-------|-------|----------|------------------|
+| <img src="Screenshots/start.jpeg" width="150"/> | <img src="Screenshots/login.jpeg" width="150"/> | <img src="Screenshots/register.jpeg" width="150"/> | <img src="Screenshots/resetpassword.jpeg" width="150"/> |
 
-<p align="center">
-  <b>Início</b> &nbsp;&nbsp;&nbsp;
-  <b>Login</b> &nbsp;&nbsp;&nbsp;
-  <b>Cadastro</b> &nbsp;&nbsp;&nbsp;
-  <b>Redefinir Senha</b> &nbsp;&nbsp;&nbsp;
-  <b>Home</b> &nbsp;&nbsp;&nbsp;
-  <b>Transações</b> &nbsp;&nbsp;&nbsp;
-  <b>Nova Despesa</b> &nbsp;&nbsp;&nbsp;
-  <b>Nova Receita</b>
-</p>
+| Home | Transações | Nova Despesa | Nova Receita |
+|------|------------|---------------|--------------|
+| <img src="Screenshots/home.jpeg" width="150"/> | <img src="Screenshots/transactions.jpeg" width="150"/> | <img src="Screenshots/addtransactionsexpenses.jpeg" width="150"/> | <img src="Screenshots/addtransactionsincome.jpeg" width="150"/> |
 
 ## 🚀 Tecnologias Utilizadas
 
