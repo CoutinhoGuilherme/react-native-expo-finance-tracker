@@ -80,6 +80,9 @@ export default function LoginScreen() {
       <Button style={{ backgroundColor: '#1e3a8a' }} mode="contained" onPress={onLoginPressed}>
         Log in
       </Button>
+      <Button icon="logo-google" style={{ backgroundColor: '#000' }} mode="contained" onPress={onLoginPressed}>
+        Log in with Google
+      </Button>
       <View style={styles.row}>
         <Text>Don't have an account yet ?</Text>
       </View>
