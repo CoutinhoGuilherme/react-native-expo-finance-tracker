@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
+import { signUp } from "../services/auth";
 // import { Text } from "react-native-paper";
 import { useRouter } from "expo-router";
 import Background from "../components/Background";
@@ -31,6 +32,15 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
 
+  async function handleRegister() {
+    try {
+      await signUp(name.value, email.value, password.value);
+      router.replace('LoginScreen');
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   const onSignUpPressed = () => {
     const nameError = nameValidator(name.value);
     const emailError = emailValidator(email.value);
@@ -41,7 +51,8 @@ export default function RegisterScreen() {
       setPassword({ ...password, error: passwordError });
       return;
     }
-    router.replace('/(tabs)/home');
+    handleRegister();
+    // router.replace('/(tabs)/home');
   };
 
   return (
@@ -86,6 +97,7 @@ export default function RegisterScreen() {
       <Button
         style={{ backgroundColor: '#1e3a8a' }} 
         mode="contained"
+        // onPress={handleRegister}
         onPress={onSignUpPressed}
       >
         Create account

@@ -6,6 +6,8 @@ import { useTransactions } from '../../contexts/TransactionContext';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import Chart from '../../components/Chart';
 import TransactionItem from '../../components/TransactionItem';
+import { useEffect } from 'react'; // <-- Importar o useEffect
+import AsyncStorage from '@react-native-async-storage/async-storage'; // <-- Importar o AsyncStorage
 import { useRouter } from 'expo-router';
 import Transactions from './transactions'; 
 
@@ -14,6 +16,15 @@ export default function Home() {
   const { transactions } = useTransactions();
   const { currency } = useCurrency();
   const router = useRouter();
+
+  useEffect(() => {
+    AsyncStorage.getItem('token').then(token => {
+      if (!token) {
+        router.replace('/LoginScreen'); 
+      }
+    });
+  }, []);
+  
 
   // Calculate totals
   const totals = transactions.reduce(

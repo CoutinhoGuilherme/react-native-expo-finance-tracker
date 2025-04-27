@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { signIn } from "../services/auth";
 import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
 // import { Text } from "react-native-paper";
 import { useRouter } from "expo-router";
@@ -28,6 +29,15 @@ export default function LoginScreen() {
   const [email, setEmail] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
 
+  async function handleLogin() {
+    try {
+      await signIn(email.value, password.value);
+      router.replace('/'); 
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   const onLoginPressed = () => {
     const emailError = emailValidator(email.value);
     const passwordError = passwordValidator(password.value);
@@ -36,7 +46,8 @@ export default function LoginScreen() {
       setPassword({ ...password, error: passwordError });
       return;
     }
-    router.replace('/(tabs)/home');
+    handleLogin()
+    // router.replace('/(tabs)/home');
   };
 
   return (
@@ -79,9 +90,6 @@ export default function LoginScreen() {
       </View>
       <Button style={{ backgroundColor: '#1e3a8a' }} mode="contained" onPress={onLoginPressed}>
         Log in
-      </Button>
-      <Button icon="logo-google" style={{ backgroundColor: '#000' }} mode="contained" onPress={onLoginPressed}>
-        Log in with Google
       </Button>
       <View style={styles.row}>
         <Text>Don't have an account yet ?</Text>
