@@ -37,10 +37,8 @@ yarn-error.*
 
 app-example
 
-.env
+README.md
 
-README
-
-scripts/
+finance-tracker/scripts/
 
 Screenshots/
