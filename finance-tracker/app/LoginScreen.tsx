@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { signIn } from "../services/auth";
-import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
+import { useAuth } from "../contexts/AuthenticationContext";
+import { TouchableOpacity, StyleSheet, View, Text, Alert } from "react-native";
 // import { Text } from "react-native-paper";
 import { useRouter } from "expo-router";
 import Background from "../components/Background";
@@ -26,17 +27,19 @@ import Paragraph from "../components/Paragraph";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { signIn } = useAuth();
   const [email, setEmail] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
 
-  async function handleLogin() {
+  const handleLogin = async () => {
     try {
       await signIn(email.value, password.value);
-      router.replace('/'); 
-    } catch (err) {
-      console.error(err);
+      Alert.alert('Sucesso', 'Login realizado com sucesso');
+      router.replace("/(tabs)/home")
+    } catch (error) {
+      Alert.alert('Erro', 'Credenciais inválidas');
     }
-  }
+  };
 
   const onLoginPressed = () => {
     const emailError = emailValidator(email.value);

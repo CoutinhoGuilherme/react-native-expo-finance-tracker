@@ -5,6 +5,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { ThemeToggle } from '../../components/ThemeToggle';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { useLanguage } from '../../contexts/LanguageContext'; // importe o contexto de idioma
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 type SettingItemProps = {
@@ -117,7 +118,11 @@ export default function Settings() {
           <SettingItem
             icon={{ name: 'log-out-outline', bg: '#607D8B' }}
             title="Log out"
-            // subtitle="1.0.0"
+            onPress={async () => {
+            await AsyncStorage.removeItem('token');
+            await AsyncStorage.removeItem('username');
+            router.replace('/LoginScreen');
+          }}
           />         
         </View>
       </View>

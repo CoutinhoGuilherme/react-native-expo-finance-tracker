@@ -1,45 +1,41 @@
 import React, { useState } from "react";
-import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
+import { useAuth } from "../contexts/AuthenticationContext";
+import { TouchableOpacity, StyleSheet, View, Text, Alert } from "react-native";
 import { signUp } from "../services/auth";
-// import { Text } from "react-native-paper";
 import { useRouter } from "expo-router";
 import Background from "../components/Background";
-import Logo from "../components/Logo";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import TextInput from "../components/TextInput";
 import BackButton from "../components/BackButton";
-import { theme } from "../contexts/ThemeContext";
 import { emailValidator } from "../helpers/emailValidator";
 import { passwordValidator } from "../helpers/passwordValidator";
 import { nameValidator } from "../helpers/nameValidator";
-import { useTheme } from '../contexts/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
-import Animated, { 
-  withSpring, 
-  useAnimatedStyle, 
-  useSharedValue,
-  withSequence,
-  withTiming,
-  runOnJS
-} from 'react-native-reanimated';
 import Paragraph from "../components/Paragraph";
 
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const {signUp} = useAuth();
   const [name, setName] = useState({ value: "", error: "" });
   const [email, setEmail] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
 
-  async function handleRegister() {
-    try {
-      await signUp(name.value, email.value, password.value);
-      router.replace('LoginScreen');
-    } catch (err) {
-      console.error(err);
+  const handleRegister = async () => {
+  try {
+    await signUp(email.value, password.value, name.value);
+    Alert.alert('Sucesso', 'Usuário registrado com sucesso');
+    router.replace("/(tabs)/home"); // ou vá para a tela de login
+  } catch (error: any) {
+    console.error('Erro ao registrar:', error);
+    if (error.response?.status === 400) {
+      Alert.alert('Erro', 'Email já registrado');
+    } else {
+      Alert.alert('Erro', 'Não foi possível registrar o usuário');
     }
   }
+};
 
   const onSignUpPressed = () => {
     const nameError = nameValidator(name.value);

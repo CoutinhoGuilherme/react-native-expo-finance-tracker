@@ -6,7 +6,7 @@ import { useTransactions } from '../../contexts/TransactionContext';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import Chart from '../../components/Chart';
 import TransactionItem from '../../components/TransactionItem';
-import { useEffect } from 'react'; // <-- Importar o useEffect
+import { useEffect, useState } from 'react'; // <-- Importar o useEffect
 import AsyncStorage from '@react-native-async-storage/async-storage'; // <-- Importar o AsyncStorage
 import { useRouter } from 'expo-router';
 import Transactions from './transactions'; 
@@ -16,6 +16,17 @@ export default function Home() {
   const { transactions } = useTransactions();
   const { currency } = useCurrency();
   const router = useRouter();
+  const [username, setUsername] = useState('');
+
+
+  useEffect(() => {
+    const loadUsername = async () => {
+      const name = await AsyncStorage.getItem('username');
+      if (name) setUsername(name);
+    };
+    loadUsername();
+  }, []);
+
 
   useEffect(() => {
     AsyncStorage.getItem('token').then(token => {
@@ -59,7 +70,7 @@ export default function Home() {
         backgroundColor: theme.primary,
         paddingTop: Platform.OS === 'ios' ? 60 : 24
       }]}>
-        <Text style={[styles.greeting, { color: '#fff' }]}>Hello, User 👋</Text>
+        <Text style={[styles.greeting, { color: '#fff' }]}>Hello, {username} 👋</Text>
         <Text style={[styles.date, { color: 'rgba(255,255,255,0.8)' }]}>
           {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
         </Text>
