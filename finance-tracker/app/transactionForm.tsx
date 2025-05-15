@@ -18,8 +18,8 @@ const incomeCategories = [
 
 const TRANSACTION_COLORS = {
   expense: {
-    active: '#FF3B30',    // Brighter red for expense
-    inactive: '#FFF1F0',  // Softer light red background
+    active: '#FF3B30',
+    inactive: '#FFF1F0',
     text: {
       active: '#FFFFFF',
       inactive: '#FF3B30'
@@ -27,8 +27,8 @@ const TRANSACTION_COLORS = {
     gradient: ['#FF3B30', '#FF6B6B']
   },
   income: {
-    active: '#34C759',    // Brighter green for income
-    inactive: '#F0FFF4',  // Softer light green background
+    active: '#34C759',
+    inactive: '#F0FFF4',
     text: {
       active: '#FFFFFF',
       inactive: '#34C759'
@@ -44,19 +44,19 @@ export default function TransactionForm() {
   const params = useLocalSearchParams<{ transactionId?: string }>();
 
   const existingTransaction = params.transactionId 
-    ? transactions.find(t => t.id === params.transactionId)
+    ? transactions.find(t => t.id === Number(params.transactionId))
     : null;
 
-  const [title, setTitle] = useState(existingTransaction?.title || '');
+  const [title, setTitle] = useState(existingTransaction?.description || '');
   const [amount, setAmount] = useState(existingTransaction ? Math.abs(existingTransaction.amount).toString() : '');
   const [category, setCategory] = useState(existingTransaction?.category || 'Other');
   const [date, setDate] = useState(existingTransaction ? new Date(existingTransaction.date) : new Date());
-  const [isRecurring, setIsRecurring] = useState(existingTransaction?.isRecurring || false);
+  const [isRecurring, setIsRecurring] = useState(existingTransaction?.is_recurring || false);
   const [recurringType, setRecurringType] = useState<'daily' | 'weekly' | 'monthly' | 'yearly' | undefined>(
-    existingTransaction?.recurringType
+    undefined // Placeholder; use if backend supports
   );
   const [recurringEndDate, setRecurringEndDate] = useState<string | null>(
-    existingTransaction?.recurringEndDate || null
+    existingTransaction?.end_date || null
   );
   const [transactionType, setTransactionType] = useState<'expense' | 'income'>(
     existingTransaction ? (existingTransaction.amount < 0 ? 'expense' : 'income') : 'expense'
@@ -69,11 +69,9 @@ export default function TransactionForm() {
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    
     if (!title.trim()) newErrors.title = 'Title is required';
     if (!amount.trim()) newErrors.amount = 'Amount is required';
     if (isNaN(parseFloat(amount))) newErrors.amount = 'Amount must be a valid number';
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -83,18 +81,18 @@ export default function TransactionForm() {
 
     try {
       const transactionData = {
-        title,
-        amount: parseFloat(amount) * (transactionType === 'expense' ? -1 : 1),
-        date: date.toISOString().split('T')[0],
+        amount: parseFloat(amount),
+        description: title,
+        type: transactionType,
+        date: date.toISOString(),
+        is_recurring: isRecurring,
         category,
-        isRecurring,
-        recurringType: isRecurring ? recurringType : undefined,
-        recurringEndDate: isRecurring ? recurringEndDate : null,
+        end_date: isRecurring && recurringEndDate ? new Date(recurringEndDate).toISOString() : null
       };
 
       if (isEditMode && params.transactionId) {
         await updateTransaction({
-          id: params.transactionId,
+          id: Number(params.transactionId),
           ...transactionData,
         });
       } else {
@@ -114,11 +112,11 @@ export default function TransactionForm() {
 
   const handleDelete = async () => {
     if (params.transactionId) {
-      await deleteTransaction(params.transactionId);
+      await deleteTransaction(Number(params.transactionId));
       router.back();
     }
   };
-
+  
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.form}>

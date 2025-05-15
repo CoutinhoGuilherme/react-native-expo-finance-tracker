@@ -1,12 +1,26 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { initDatabase, getTransactions, addTransaction, updateTransaction, deleteTransaction, Transaction } from '../services/database';
+import api from '../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export interface Transaction {
+  id: number;
+  amount: number;
+  description: string;
+  type: string;
+  date: string;
+  is_recurring?: boolean;
+  category: string;
+  end_date?: string | null;
+  user_id: number;
+  created_at: string;
+  updated_at?: string | null;
+}
 
 interface TransactionContextType {
   transactions: Transaction[];
   isLoading: boolean;
-  addTransaction: (transaction: Omit<Transaction, 'id'>) => Promise<void>;
-  updateTransaction: (transaction: Transaction) => Promise<void>;
-  deleteTransaction: (id: string) => Promise<void>;
+  addTransaction: (data: Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  deleteTransaction: (id: number) => Promise<void>;
   refreshTransactions: () => Promise<void>;
 }
 
@@ -17,56 +31,48 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    initializeDatabase();
+    refreshTransactions();
   }, []);
 
-  const initializeDatabase = async () => {
+  const getAuthHeader = async () => {
+  const token = await AsyncStorage.getItem('token');
+  if (!token) throw new Error('Token não encontrado');
+  return {
+    headers: { Authorization: `Bearer ${token}` },
+  };
+};
+
+  const refreshTransactions = async () => {
+    setIsLoading(true);
     try {
-      await initDatabase();
-      await refreshTransactions();
+      const config = await getAuthHeader();
+      const response = await api.get('/transactions/', config);
+      setTransactions(response.data);
     } catch (error) {
-      console.error('Error initializing:', error);
+      console.error('Erro ao buscar transações:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const refreshTransactions = async () => {
-    try {
-      const data = await getTransactions();
-      setTransactions(data);
-    } catch (error) {
-      console.error('Error refreshing transactions:', error);
-    }
-  };
+  const addTransaction = async (data: Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+  try {
+    const config = await getAuthHeader();
+    console.log('Enviando para API:', data);
+    await api.post('/transactions/', data, config);
+    await refreshTransactions();
+  } catch (error) {
+    console.error('Erro ao adicionar transação:', error);
+  }
+};
 
-  const handleAddTransaction = async (transaction: Omit<Transaction, 'id'>) => {
+  const deleteTransaction = async (id: number) => {
     try {
-      await addTransaction(transaction);
+      const config = await getAuthHeader();
+      await api.delete(`/transactions/${id}`, config);
       await refreshTransactions();
     } catch (error) {
-      console.error('Error adding transaction:', error);
-      throw error;
-    }
-  };
-
-  const handleUpdateTransaction = async (transaction: Transaction) => {
-    try {
-      await updateTransaction(transaction);
-      await refreshTransactions();
-    } catch (error) {
-      console.error('Error updating transaction:', error);
-      throw error;
-    }
-  };
-
-  const handleDeleteTransaction = async (id: string) => {
-    try {
-      await deleteTransaction(id);
-      await refreshTransactions();
-    } catch (error) {
-      console.error('Error deleting transaction:', error);
-      throw error;
+      console.error('Erro ao excluir transação:', error);
     }
   };
 
@@ -74,10 +80,9 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
     <TransactionContext.Provider value={{
       transactions,
       isLoading,
-      addTransaction: handleAddTransaction,
-      updateTransaction: handleUpdateTransaction,
-      deleteTransaction: handleDeleteTransaction,
-      refreshTransactions,
+      addTransaction,
+      deleteTransaction,
+      refreshTransactions
     }}>
       {children}
     </TransactionContext.Provider>
@@ -86,8 +91,8 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
 
 export function useTransactions() {
   const context = useContext(TransactionContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useTransactions must be used within a TransactionProvider');
   }
   return context;
-} 
+}
