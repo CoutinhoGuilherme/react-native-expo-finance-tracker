@@ -87,6 +87,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         password,
         name,
       });
+
+    await signIn(email, password);
+
     } catch (error) {
       console.error('Erro ao registrar:', error);
       throw new Error('Erro ao registrar usuário');

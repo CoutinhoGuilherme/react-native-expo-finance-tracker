@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthenticationContext";
 import { TouchableOpacity, StyleSheet, View, Text, Alert } from "react-native";
-import { signUp } from "../services/auth";
 import { useRouter } from "expo-router";
 import Background from "../components/Background";
 import Header from "../components/Header";
@@ -17,7 +16,7 @@ import Paragraph from "../components/Paragraph";
 
 export default function RegisterScreen() {
   const router = useRouter();
-  const {signUp} = useAuth();
+  const {signUp, signIn} = useAuth();
   const [name, setName] = useState({ value: "", error: "" });
   const [email, setEmail] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
@@ -26,7 +25,7 @@ export default function RegisterScreen() {
   try {
     await signUp(email.value, password.value, name.value);
     Alert.alert('Sucesso', 'Usuário registrado com sucesso');
-    router.replace("/(tabs)/home"); // ou vá para a tela de login
+    router.push("/(tabs)/home"); // ou vá para a tela de login
   } catch (error: any) {
     console.error('Erro ao registrar:', error);
     if (error.response?.status === 400) {
@@ -48,7 +47,6 @@ export default function RegisterScreen() {
       return;
     }
     handleRegister();
-    // router.replace('/(tabs)/home');
   };
 
   return (

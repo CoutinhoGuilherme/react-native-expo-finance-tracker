@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Alert, Modal } from 'react-native';
 import { Link, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -119,9 +119,22 @@ export default function Settings() {
             icon={{ name: 'log-out-outline', bg: '#607D8B' }}
             title="Log out"
             onPress={async () => {
-            await AsyncStorage.removeItem('token');
-            await AsyncStorage.removeItem('username');
-            router.replace('/LoginScreen');
+            Alert.alert(
+                'Confirmação',
+                'Deseja realmente sair?',
+                [
+                  { text: 'Não', style: 'cancel' },
+                  { 
+                    text: 'Sim', 
+                    onPress: async () => {
+                      await AsyncStorage.removeItem('token');
+                      await AsyncStorage.removeItem('username');
+                      router.replace('/LoginScreen');
+                    }
+                  },
+                ],
+                { cancelable: true }
+              );
           }}
           />         
         </View>
