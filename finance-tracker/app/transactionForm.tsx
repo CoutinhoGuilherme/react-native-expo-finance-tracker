@@ -81,18 +81,21 @@ export default function TransactionForm() {
 
     try {
       const transactionData = {
+        id: Number(params.transactionId),
         amount: parseFloat(amount),
         description: title,
         type: transactionType,
         date: date.toISOString(),
         is_recurring: isRecurring,
         category,
-        end_date: isRecurring && recurringEndDate ? new Date(recurringEndDate).toISOString() : null
+        end_date: isRecurring && recurringEndDate ? new Date(recurringEndDate).toISOString() : null,
+        user_id: existingTransaction?.user_id ?? 0,  
+        created_at: existingTransaction?.created_at ?? new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
 
       if (isEditMode && params.transactionId) {
         await updateTransaction({
-          id: Number(params.transactionId),
           ...transactionData,
         });
       } else {
@@ -287,11 +290,27 @@ export default function TransactionForm() {
     onEndDateChange={setRecurringEndDate}
   />
 </View>
-
-        <Pressable 
-          style={[styles.button, { backgroundColor: theme.primary }]}
-          onPress={handleSubmit}
-        >
+          <Pressable 
+            style={[styles.button, { backgroundColor: theme.primary }]}
+            onPress={() => {
+              Alert.alert(
+                isEditMode ? 'Confirm Update' : 'Confirm Add',
+                isEditMode 
+                  ? 'Are you sure you want to update this transaction?'
+                  : 'Are you sure you want to add this transaction?',
+                [
+                  {
+                    text: 'Cancel',
+                    style: 'cancel',
+                  },
+                  {
+                    text: isEditMode ? 'Update' : 'Add',
+                    onPress: handleSubmit,
+                  },
+                ]
+              );
+            }}
+          >
           <Text style={styles.buttonText}>
             {isEditMode ? 'Update' : 'Add'} Transaction
           </Text>
@@ -299,11 +318,27 @@ export default function TransactionForm() {
 
         {isEditMode && (
           <Pressable 
-            style={[styles.button, { backgroundColor: '#F44336', marginTop: 12 }]}
-            onPress={handleDelete}
-          >
-            <Text style={styles.buttonText}>Delete Transaction</Text>
-          </Pressable>
+    style={[styles.button, { backgroundColor: '#F44336', marginTop: 12 }]}
+    onPress={() => {
+      Alert.alert(
+        'Confirm Delete',
+        'Are you sure you want to delete this transaction? This action cannot be undone.',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Delete',
+            onPress: handleDelete,
+            style: 'destructive',
+          },
+        ]
+      );
+    }}
+  >
+    <Text style={styles.buttonText}>Delete Transaction</Text>
+  </Pressable>
         )}
       </View>
     </ScrollView>

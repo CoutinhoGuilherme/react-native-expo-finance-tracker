@@ -2,6 +2,14 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { DefaultTheme } from "react-native-paper";
 
+// export const DEFAULT_THEME = {
+//   primary: '#1e3a8a',
+//   background: '#ffffff',
+//   text: {
+//     primary: '#1a1a1a',
+//     secondary: '#666666',
+//   },
+
 export const theme = {
   ...DefaultTheme,
   colors: {
@@ -43,6 +51,7 @@ export const darkTheme: Theme = {
 };
 
 export type Theme = {
+  surfaceDisabled: ColorValue | undefined;
   primary: string;
   background: string;
   surface: string;

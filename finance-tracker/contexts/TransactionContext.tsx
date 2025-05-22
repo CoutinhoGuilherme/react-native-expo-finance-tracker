@@ -20,6 +20,7 @@ interface TransactionContextType {
   transactions: Transaction[];
   isLoading: boolean;
   addTransaction: (data: Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  updateTransaction: (data: Transaction) => Promise<void>;
   deleteTransaction: (id: number) => Promise<void>;
   refreshTransactions: () => Promise<void>;
 }
@@ -66,6 +67,18 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
   }
 };
 
+const updateTransaction = async (data: Transaction) => {
+  try {
+    const config = await getAuthHeader();
+    await api.put(`/transactions/${data.id}`, data, config);
+    await refreshTransactions();
+  } catch (error) {
+    console.error('Erro ao atualizar transação:', error);
+    throw error;
+  }
+};
+
+
   const deleteTransaction = async (id: number) => {
     try {
       const config = await getAuthHeader();
@@ -81,6 +94,7 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
       transactions,
       isLoading,
       addTransaction,
+      updateTransaction,
       deleteTransaction,
       refreshTransactions
     }}>

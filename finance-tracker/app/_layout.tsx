@@ -7,13 +7,15 @@ import { LanguageProvider } from '../contexts/LanguageContext';
 import { StyleSheet } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import { AuthProvider } from '@/contexts/AuthenticationContext';
+import UserProfileScreen from './userProfileScreen';
 
 // Create a separate component for Stack configuration
 function StackNavigator() {
   const { theme } = useTheme();
   
   return (
-    <Stack>
+    <Stack
+    screenOptions={{headerShown: false}}>
       <Stack.Screen 
         name="LoginScreen" 
         options={{ 
@@ -49,6 +51,10 @@ function StackNavigator() {
         options={{ 
           headerShown: false 
         }} 
+      />
+      <Stack.Screen 
+        name="UserProfile"
+        options={{ headerShown: false }}
       />
       <Stack.Screen 
         name="transactionForm" 
@@ -108,9 +114,9 @@ function StackNavigator() {
 
 export default function RootLayout() {
   return (
+<ThemeProvider>
   <AuthProvider> 
     <GestureHandlerRootView style={styles.container}>
-      <ThemeProvider>
         <TransactionProvider>
           <CurrencyProvider>
             <LanguageProvider>
@@ -118,9 +124,9 @@ export default function RootLayout() {
             </LanguageProvider>
           </CurrencyProvider>
         </TransactionProvider>
-      </ThemeProvider>
     </GestureHandlerRootView>
   </AuthProvider>
+</ThemeProvider>
   );
 }
 

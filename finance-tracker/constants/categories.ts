@@ -1,9 +1,10 @@
 export const expenseCategories = [
-    'Food & Drinks',
+    'Food',
     'Shopping',
     'Transport',
     'Housing',
     'Entertainment',
+    'Bills',
     'Healthcare',
     'Education',
     'Utilities',

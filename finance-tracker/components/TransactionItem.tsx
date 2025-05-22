@@ -5,10 +5,11 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useCurrency } from '../contexts/CurrencyContext';
 
 interface TransactionItemProps {
-  id: string;
+  id: number;
   title: string;
   amount: number;
   date: string;
+  type: string;
   category: string;
   isRecurring?: boolean;
   recurringType?: 'daily' | 'weekly' | 'monthly' | 'yearly';
@@ -48,6 +49,7 @@ export default function TransactionItem({
   title,
   amount,
   date,
+  type,
   category,
   isRecurring,
   recurringType,
@@ -73,7 +75,7 @@ export default function TransactionItem({
     }
   };
 
-  const isIncome = amount > 0;
+  const isIncome = type === 'income';
   const colorScheme = isIncome ? COLORS.income : COLORS.expense;
   const colors = isDarkMode ? colorScheme.dark : colorScheme.light;
 

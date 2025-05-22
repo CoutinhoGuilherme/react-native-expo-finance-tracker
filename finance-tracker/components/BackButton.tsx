@@ -1,19 +1,24 @@
+import { useTheme } from "@/contexts/ThemeContext";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { TouchableOpacity, Image, StyleSheet } from "react-native";
+import { TouchableOpacity, Image, StyleSheet, Pressable } from "react-native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 
 type Props = {
   goBack: () => void;
 };
 
-export default function BackButton({ goBack }: Props) {
+export default function BackButton({ goBack }: { goBack: () => void }) {
+  const { theme } = useTheme();
+  
   return (
-    <TouchableOpacity onPress={goBack} style={styles.container}>
-      <Image
-        style={styles.image}
-        source={require("../assets/images/back.png")}
+    <Pressable onPress={goBack} style={styles.container}>
+      <Ionicons 
+        name="arrow-back" 
+        size={24} 
+        color={theme.text.primary} 
       />
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

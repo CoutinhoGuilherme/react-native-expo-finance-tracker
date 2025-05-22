@@ -10,9 +10,9 @@ interface CategoryFilterProps {
   onSelectCategory: (category: string | null) => void;
 }
 
-// Update the categoryIcons type
 const categoryIcons: { [key: string]: IconNames } = {
-  'Food & Drinks': 'restaurant',
+  'Food': 'restaurant',
+  'Bills': 'shield',
   'Shopping': 'cart',
   'Transport': 'car',
   'Housing': 'home',
@@ -42,98 +42,103 @@ export default function CategoryFilter({
 
   return (
     <View style={styles.wrapper}>
-      <Text style={[styles.sectionTitle, { color: theme.text.secondary }]}>
-        Categories
-      </Text>
+      <Text style={[styles.sectionTitle, { color: theme.text.secondary }]}>Categorias</Text>
       <ScrollView 
         horizontal 
         showsHorizontalScrollIndicator={false}
         style={styles.container}
+        contentContainerStyle={styles.scrollContent}
       >
-        <Pressable
-          style={[
-            styles.chip,
-            { 
-              backgroundColor: !selectedCategory ? theme.primary : theme.surface,
-              borderColor: theme.border,
-              shadowColor: theme.shadowColor,
-            }
-          ]}
+        <CategoryChip
+          label="Todos"
+          icon="apps"
+          selected={!selectedCategory}
           onPress={() => onSelectCategory(null)}
-        >
-          <Ionicons 
-            name="apps" 
-            size={16} 
-            color={!selectedCategory ? '#fff' : theme.text.primary} 
-          />
-          <Text style={[
-            styles.chipText,
-            { color: !selectedCategory ? '#fff' : theme.text.primary }
-          ]}>
-            All
-          </Text>
-        </Pressable>
+          theme={theme}
+        />
         {categories.map((category) => (
-          <Pressable
+          <CategoryChip
             key={category}
-            style={[
-              styles.chip,
-              { 
-                backgroundColor: selectedCategory === category ? theme.primary : theme.surface,
-                borderColor: theme.border,
-                shadowColor: theme.shadowColor,
-              }
-            ]}
+            label={category}
+            icon={categoryIcons[category] || 'help-circle'}
+            selected={selectedCategory === category}
             onPress={() => onSelectCategory(category)}
-          >
-            <Ionicons 
-              name={categoryIcons[category] || 'help-circle'} 
-              size={16} 
-              color={selectedCategory === category ? '#fff' : theme.text.primary} 
-            />
-            <Text style={[
-              styles.chipText,
-              { color: selectedCategory === category ? '#fff' : theme.text.primary }
-            ]}>
-              {category}
-            </Text>
-          </Pressable>
+            theme={theme}
+          />
         ))}
       </ScrollView>
     </View>
   );
 }
 
+interface CategoryChipProps {
+  label: string;
+  icon: IconNames;
+  selected: boolean;
+  onPress: () => void;
+  theme: any;
+}
+
+function CategoryChip({ label, icon, selected, onPress, theme }: CategoryChipProps) {
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        styles.chip,
+        {
+          backgroundColor: selected ? theme.primary : theme.surface,
+          borderColor: theme.border,
+          shadowColor: theme.shadowColor,
+          opacity: pressed ? 0.8 : 1,
+        },
+      ]}
+      onPress={onPress}
+      android_ripple={{ color: theme.border }}
+    >
+      <Ionicons 
+        name={icon} 
+        size={18} 
+        color={selected ? '#fff' : theme.text.primary} 
+      />
+      <Text style={[styles.chipText, { color: selected ? '#fff' : theme.text.primary }]}> {label} </Text>
+      {selected && (
+        <Ionicons name="checkmark-circle" size={14} color="#fff" style={{ marginLeft: 4 }} />
+      )}
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   wrapper: {
-    marginTop: 8,
+    marginTop: 12,
+    paddingHorizontal: 16,
   },
   sectionTitle: {
     fontSize: 14,
     fontWeight: '600',
-    marginBottom: 8,
-    paddingHorizontal: 16,
+    marginBottom: 10,
   },
   container: {
     flexGrow: 0,
-    paddingHorizontal: 16,
+  },
+  scrollContent: {
+    paddingVertical: 4,
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 16,
-    marginRight: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginRight: 10,
     borderWidth: 1,
     elevation: 2,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
-    shadowRadius: 2,
+    shadowRadius: 3,
   },
   chipText: {
     marginLeft: 6,
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '500',
   },
-}); 
+});
