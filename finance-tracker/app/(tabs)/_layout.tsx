@@ -32,6 +32,7 @@ export default function TabsLayout() {
         name="transactions"
         options={{
           title: 'Transactions',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="list" size={size} color={color} />
           ),
@@ -41,6 +42,7 @@ export default function TabsLayout() {
         name="settings"
         options={{
           title: 'Settings',
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings" size={size} color={color} />
           ),

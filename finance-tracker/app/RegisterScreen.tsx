@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: 'rgba(255,255,255,0.95)',
     borderRadius: 12,
-    marginVertical: 6,
+    marginVertical: 1,
     elevation: 3,
     shadowColor: '#1e3a8a',
     shadowOffset: { width: 0, height: 2 },
@@ -304,11 +304,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerText: {
-    color: 'rgba(255,255,255,0.9)',
+    color: 'rgba(0, 0, 0, 0.9)',
     fontSize: 14,
   },
   link: {
-    color: '#93c5fd',
+    color: '#fff',
     fontWeight: '600',
     fontSize: 14,
     textDecorationLine: 'underline',
