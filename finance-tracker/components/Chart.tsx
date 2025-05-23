@@ -90,12 +90,17 @@ export default function Chart() {
         contentContainerStyle={styles.legendScrollContent}
       >
         <View style={styles.legendContainer}>
-          {legendLabels.map((label, index) => (
-            <View key={index} style={styles.legendItem}>
-              <View style={[styles.legendDot, { backgroundColor: sliceColor[index] }]} />
-              <Text style={[styles.legendText, { color: theme.text.primary }]}>{label}</Text>
-            </View>
-          ))}
+          {legendLabels.map((label, index) => {
+            const percentage = ((series[index] / total) * 100).toFixed(1);
+            return (
+              <View key={index} style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: sliceColor[index] }]} />
+                <Text style={[styles.legendText, { color: theme.text.primary }]}>
+                  {label} ({percentage}%)
+                </Text>
+              </View>
+            );
+          })}
         </View>
       </ScrollView>
       </View>
@@ -103,6 +108,7 @@ export default function Chart() {
   );
 }
 
+// Os estilos permanecem EXATAMENTE os mesmos
 const styles = StyleSheet.create({
     legendScrollContent: {
     paddingHorizontal: 16,

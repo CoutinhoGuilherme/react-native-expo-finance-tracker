@@ -3,22 +3,12 @@ import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
 import { useRouter } from "expo-router";
 import Background from "../components/Background";
 import BackButton from "../components/BackButton";
-import Logo from "../components/Logo";
 import Header from "../components/Header";
 import TextInput from "../components/TextInput";
 import Button from "../components/Button";
 import { emailValidator } from "../helpers/emailValidator";
 import { Ionicons } from '@expo/vector-icons';
-import Animated, { 
-  withSpring, 
-  useAnimatedStyle, 
-  useSharedValue,
-  withSequence,
-  withTiming,
-  runOnJS
-} from 'react-native-reanimated';
 import Paragraph from "../components/Paragraph";
-
 
 export default function ResetPasswordScreen() {
   const router = useRouter();  
@@ -36,16 +26,25 @@ export default function ResetPasswordScreen() {
   return (
     <Background>
       <BackButton goBack={router.goBack} />
-      <View>
-        <Ionicons name="wallet" size={100} color="#fff" />
+      <View style={styles.logoContainer}>
+        <View style={styles.logoCircle}>
+          <Ionicons name="wallet" size={60} color="#2563eb" />
+        </View>
       </View>
       <Header style={styles.title}>FinWise</Header>
       <Paragraph style={styles.subtitle}>
         Smart Money Management
       </Paragraph>
-      <Header>Reset your password.</Header>
+      
+      <Header style={styles.resetHeader}>Reset your password</Header>
+      <Paragraph style={styles.description}>
+        Enter your email to receive the reset link
+      </Paragraph>
+
       <TextInput
         label="Email"
+        placeholder="Enter your registered email"
+        style={styles.input}
         returnKeyType="done"
         value={email.value}
         onChangeText={(text) => setEmail({ value: text, error: "" })}
@@ -55,14 +54,16 @@ export default function ResetPasswordScreen() {
         autoCompleteType="email"
         textContentType="emailAddress"
         keyboardType="email-address"
-        description="You will receive an email with the reset link."
+        leftIcon={<Ionicons name="mail-outline" size={20} color="#64748b" />}
       />
+
       <Button
         mode="contained"
         onPress={sendResetPasswordEmail}
-        style={{ backgroundColor: '#1e3a8a'}}
+        style={styles.button}
+        labelStyle={styles.buttonLabel}
       >
-        Continue
+        Send Instructions
       </Button>
     </Background>
   );
@@ -70,37 +71,77 @@ export default function ResetPasswordScreen() {
 
 const styles = StyleSheet.create({
   logoContainer: {
-    marginBottom: 20,
+    alignItems: 'center',
+    marginBottom: 25,
   },
-  forgotPassword: {
-    width: "100%",
-    alignItems: "flex-end",
-    marginBottom: 10,
-  },
-  row: {
-    flexDirection: "row",
-    marginTop: 4,
-  },
-  forgot: {
-    fontWeight: "bold",
-    fontSize: 13,
-    color: "#fff",
-  },
-  link: {
-    fontWeight: "bold",
-    color: "#fff",
+  logoCircle: {
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#1e3a8a',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   title: {
-    fontSize: 42,
-    fontWeight: 'bold',
+    fontSize: 38,
+    fontWeight: '800',
     color: '#fff',
-    // marginBottom: 10,
-    letterSpacing: 1,
+    textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.1)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 10,
+    letterSpacing: 0.5,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.85)',
+    textAlign: 'center',
+    letterSpacing: 0.4,
+    marginBottom: 30,
+  },
+  resetHeader: {
+    fontSize: 24,
+    color: '#fff',
+    fontWeight: '600',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  description: {
+    fontSize: 14,
     color: 'rgba(255,255,255,0.8)',
-    letterSpacing: 0.5,
-    marginBottom: 50,
+    textAlign: 'center',
+    marginBottom: 30,
+  },
+  input: {
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    borderRadius: 12,
+    marginVertical: 8,
+    elevation: 3,
+    shadowColor: '#1e3a8a',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    paddingHorizontal: 16,
+  },
+  button: {
+    backgroundColor: '#2563eb',
+    borderRadius: 28,
+    paddingVertical: 16,
+    marginTop: 25,
+    elevation: 5,
+    shadowColor: '#1e3a8a',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+  },
+  buttonLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
   },
 });

@@ -2,46 +2,40 @@ import React from "react";
 import { useRouter } from "expo-router";
 import Background from "../components/Background";
 import { View, Text, StyleSheet } from 'react-native';
-import Logo from "../components/Logo";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import Paragraph from "../components/Paragraph";
-import { useTheme } from '../contexts/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
-import Animated, { 
-  withSpring, 
-  useAnimatedStyle, 
-  useSharedValue,
-  withSequence,
-  withTiming,
-  runOnJS
-} from 'react-native-reanimated';
 import { StatusBar } from 'expo-status-bar';
-
 
 export default function StartScreen() {
   const router = useRouter();
-  const { theme } = useTheme();  
-  
+
   return (
-    <Background>
+    <Background style={styles.container}>
       <StatusBar hidden />
-        <View style={styles.logoContainer}>
-          <Ionicons name="wallet" size={100} color="#fff" />
+      <View style={styles.logoContainer}>
+        <View style={styles.logoCircle}>
+          <Ionicons name="wallet" size={60} color="#2563eb" />
         </View>
+      </View>
       <Header style={styles.title}>FinWise</Header>
       <Paragraph style={styles.subtitle}>
-      Smart Money Management
+        Smart Money Management
       </Paragraph>
+      
       <Button
-        style={{ backgroundColor: '#1e3a8a' }} 
+        style={styles.primaryButton}
+        labelStyle={styles.buttonLabel}
         mode="contained"
         onPress={() => router.navigate("LoginScreen")}
       >
         Log in
       </Button>
+      
       <Button
-        style={{ color: '#1e3a8a' }} 
+        style={styles.secondaryButton}
+        labelStyle={styles.secondaryButtonLabel}
         mode="outlined"
         onPress={() => router.navigate("RegisterScreen")}
       >
@@ -55,26 +49,69 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-  },
-  content: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 30,
   },
   logoContainer: {
-    marginBottom: 20,
+    alignItems: 'center',
+    marginBottom: 25,
+  },
+  logoCircle: {
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#1e3a8a',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   title: {
-    fontSize: 42,
-    fontWeight: 'bold',
+    fontSize: 38,
+    fontWeight: '800',
     color: '#fff',
-    // marginBottom: 10,
-    letterSpacing: 1,
+    textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.1)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 10,
+    letterSpacing: 0.5,
   },
   subtitle: {
-    fontSize: 18,
-    color: 'rgba(255,255,255,0.8)',
-    letterSpacing: 0.5,
-    marginBottom: 50,
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.85)',
+    textAlign: 'center',
+    letterSpacing: 0.4,
+    marginBottom: 40,
   },
-}); 
+  primaryButton: {
+    backgroundColor: '#2563eb',
+    borderRadius: 28,
+    paddingVertical: 16,
+    marginVertical: 10,
+    elevation: 5,
+    shadowColor: '#1e3a8a',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+  },
+  secondaryButton: {
+    borderColor: '#2563eb',
+    borderWidth: 2,
+    borderRadius: 28,
+    paddingVertical: 14,
+    marginVertical: 10,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  buttonLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  secondaryButtonLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#2563eb',
+  },
+});
