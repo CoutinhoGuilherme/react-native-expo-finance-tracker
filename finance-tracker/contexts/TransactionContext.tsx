@@ -50,7 +50,7 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
       const response = await api.get('/transactions/', config);
       setTransactions(response.data);
     } catch (error) {
-      console.error('Erro ao buscar transações:', error);
+      // console.error('Erro ao buscar transações:', error);
     } finally {
       setIsLoading(false);
     }

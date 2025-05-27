@@ -4,10 +4,10 @@ import {
   Text, 
   FlatList, 
   StyleSheet, 
-  TouchableOpacity, // Kept for FAB and swipe actions where specific opacity might be desired
+  TouchableOpacity, 
   TextInput, 
   ScrollView, 
-  Pressable, 
+  Pressable,
   Dimensions, 
   Animated, 
   Alert,
@@ -76,14 +76,55 @@ export default function Transactions() {
   const [selectedType, setSelectedType] = useState<'all' | 'income' | 'expense'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const filteredTransactions = transactions.filter(transaction => {
-    const typeMatch = selectedType === 'all' || transaction.type === selectedType;
-    const categoryMatch = !selectedCategory || transaction.category === selectedCategory;
-    const searchMatch = transaction.description
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    return typeMatch && categoryMatch && searchMatch;
-  }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Ensure sorted
+  const filteredTransactions = transactions
+  .flatMap((transaction) => {
+    const transactionsToShow = [transaction];
+    
+    // Gerar próxima ocorrência apenas se for transação recorrente
+    if (transaction.isRecurring) {
+      const currentDate = new Date(transaction.date);
+      const periodsToShow = 2; // Mostrar próximos 2 períodos
+
+      for (let i = 1; i <= periodsToShow; i++) {
+        const nextDate = new Date(currentDate);
+        
+        switch (transaction.recurringType) {
+          case 'daily':
+            nextDate.setDate(nextDate.getDate() + i);
+            break;
+          case 'weekly':
+            nextDate.setDate(nextDate.getDate() + (i * 7));
+            break;
+          case 'monthly':
+            nextDate.setMonth(nextDate.getMonth() + i);
+            break;
+          case 'yearly':
+            nextDate.setFullYear(nextDate.getFullYear() + i);
+            break;
+        }
+
+        // Verificar se a data gerada não ultrapassa a data final (se existir)
+        if (!transaction.end_date || nextDate <= new Date(transaction.end_date)) {
+          transactionsToShow.push({
+            ...transaction,
+            id: transaction.id + i, // ID único para instâncias
+            date: nextDate.toISOString(),
+            isRecurringInstance: true // Marcar como instância gerada
+          });
+        }
+      }
+    }
+    return transactionsToShow;
+  })
+  .filter(transaction => {
+    const typeMatch = selectedType === 'all' || transaction.type === selectedType;
+    const categoryMatch = !selectedCategory || transaction.category === selectedCategory;
+    const searchMatch = transaction.description
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    return typeMatch && categoryMatch && searchMatch;
+  })
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   const currentCategories = selectedType === 'income' ? incomeCategories : 
                           selectedType === 'expense' ? expenseCategories :
@@ -145,15 +186,17 @@ export default function Transactions() {
     );
   };
 
-  const totalIncome = transactions
-    .filter(t => t.type === 'income')
-    .reduce((sum, t) => sum + t.amount, 0);
+// Correções: usar filteredTransactions para refletir filtros aplicados
+const totalIncome = filteredTransactions
+  .filter(t => t.type === 'income')
+  .reduce((sum, t) => sum + t.amount, 0); // ← LINHA ALTERADA
 
-  const totalExpense = transactions
-    .filter(t => t.type === 'expense')
-    .reduce((sum, t) => sum + t.amount, 0);
+const totalExpense = filteredTransactions
+  .filter(t => t.type === 'expense')
+  .reduce((sum, t) => sum + t.amount, 0); // ← LINHA ALTERADA
 
-  const netBalance = totalIncome - totalExpense;
+// Substituir o cálculo atual do netBalance por:
+const netBalance = filteredTransactions.reduce((acc, transaction) => acc + transaction.amount, 0);
 
 
   // Reusable SettingItem-like component for transactions
@@ -184,10 +227,10 @@ export default function Transactions() {
           <View style={styles.settingContent}>
             <Text style={[styles.settingTitle, { color: theme.text.primary }]} numberOfLines={1}>{item.description}</Text>
             <Text style={[styles.settingSubtitle, { color: theme.text.secondary }]} numberOfLines={1}>
-              {new Date(item.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })} - {item.category}
+              {new Date(item.date).toLocaleDateString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric' })} - {item.category}
             </Text>
           </View>
-          <View style={styles.transactionDetails}>
+        <View style={styles.transactionDetails}>
             <Text style={[styles.transactionAmount, { color: item.type === 'income' ? (theme.success ||'#4CAF50') : (theme.danger || '#F44336') }]}>
               {formatCurrencyDisplay(item.amount, currency.symbol, item.type as 'income' | 'expense')}
             </Text>
@@ -534,9 +577,10 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 12,
     justifyContent: 'center',
+    gap: 2,
   },
   settingTitle: {
-    fontSize: 15, 
+    fontSize: 12, 
     fontWeight: '600',
     marginBottom: 3,
   },
@@ -544,10 +588,15 @@ const styles = StyleSheet.create({
     fontSize: 12, 
     opacity: 0.8,
     lineHeight: 16,
+    textAlign: 'left',
+    marginLeft: -40,
   },
   transactionDetails: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-end',
+    minWidth: '30%',
+    flexShrink: 0,
   },
   transactionAmount: {
     fontSize: 15,

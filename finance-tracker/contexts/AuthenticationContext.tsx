@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           });
           setUser(userResponse.data);
         } catch (error) {
-          console.error('Erro ao buscar user com token salvo', error);
+          // console.error('Erro ao buscar user com token salvo', error);
           setToken(null);
           setUser(null);
           await AsyncStorage.removeItem('token');

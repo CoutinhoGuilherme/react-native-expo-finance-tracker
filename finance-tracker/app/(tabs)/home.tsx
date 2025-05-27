@@ -5,7 +5,8 @@ import {
   Pressable, // Mudado de TouchableOpacity para Pressable para consistência
   ScrollView, 
   SafeAreaView, // Adicionado
-  Platform 
+  Platform,
+  TouchableOpacity
 } from 'react-native';
 // import { Link } from 'expo-router'; // Não usado diretamente para itens de lista aqui
 import { Ionicons } from '@expo/vector-icons';
@@ -19,9 +20,12 @@ import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 // import Transactions from './transactions'; // Não parece estar sendo usado no código fornecido
+import { addMonths, format, subMonths, isSameMonth } from 'date-fns';
+import {ptBR} from 'date-fns/locale';
 
 // Importando Dimensions como na tela Settings, caso necessário para estilos futuros
 import { Dimensions } from 'react-native';
+
 const { width } = Dimensions.get('window');
 
 // Definindo o tipo para o nosso novo TransactionSettingItem, similar ao SettingItemProps
@@ -45,6 +49,16 @@ export default function Home() {
   const router = useRouter();
   const [username, setUsername] = useState('');
 
+const [selectedMonth, setSelectedMonth] = useState(new Date());
+
+const filteredByMonth = transactions.filter(transaction =>
+  isSameMonth(new Date(transaction.date), selectedMonth)
+)
+
+const handleMonthChange = (newDate: Date) => {
+  setSelectedMonth(newDate);
+};
+
   useEffect(() => {
     const loadUsername = async () => {
       const name = await AsyncStorage.getItem('username');
@@ -56,23 +70,32 @@ export default function Home() {
   useEffect(() => {
     AsyncStorage.getItem('token').then(token => {
       if (!token) {
-        router.replace('/LoginScreen'); 
+        router.replace('/LoginScreen'); ''
       }
     });
   }, []);
   
-  const totals = transactions.reduce(
-    (acc, transaction) => {
-      if (transaction.type === 'income') {
-        acc.income += transaction.amount;
-      } else {
-        acc.expenses += Math.abs(transaction.amount);
-      }
-      acc.balance = acc.income - acc.expenses;
-      return acc;
-    },
-    { balance: 0, income: 0, expenses: 0 }
-  );
+  const filteredTransactions = transactions.filter(transaction => {
+  const transactionDate = new Date(transaction.date);
+  return (
+    transactionDate.getMonth() === selectedMonth.getMonth() &&
+    transactionDate.getFullYear() === selectedMonth.getFullYear()
+  );
+});
+
+const totals = filteredTransactions.reduce(
+  (acc, transaction) => {
+    if (transaction.type === 'income') {
+      acc.income += transaction.amount;
+    } else {
+      acc.expenses += Math.abs(transaction.amount);
+    }
+    acc.balance = acc.income - acc.expenses;
+    return acc;
+  },
+  { balance: 0, income: 0, expenses: 0 }
+);
+
 
   const recentTransactions = transactions
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -157,12 +180,37 @@ export default function Home() {
         </View>
       
         {/* Chart Section */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.text.secondary, marginLeft: 4 }]}>Visão Geral Gráfica</Text>
-          <View style={[styles.sectionContent, { backgroundColor: theme.surface, shadowColor: theme.shadow || theme.text.primary, padding: 10 }]}>
-            <Chart /> 
-          </View>
-        </View>
+                <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: theme.text.secondary, marginLeft: 4 }]}>
+            Visão Geral - {format(selectedMonth, 'MMMM yyyy', { locale: ptBR })}
+        </Text>
+        <View style={[styles.sectionContent, { backgroundColor: theme.surface, shadowColor: theme.shadow || theme.text.primary, padding: 10 }]}>
+            <Chart 
+            selectedMonth={selectedMonth}
+            onMonthChange={handleMonthChange}
+            />
+            <View style={styles.monthNavigation}>
+            <TouchableOpacity
+                onPress={() => setSelectedMonth(subMonths(selectedMonth, 1))}
+                style={styles.navButton}
+            >
+                <Ionicons name="chevron-back" size={24} color={theme.primary} />
+            </TouchableOpacity>
+
+          <Text style={[styles.headerTitle, { color: theme.text.primary }]}>
+            {currency.symbol}{totals.balance.toFixed(2)}
+          </Text>
+            
+            <TouchableOpacity
+                onPress={() => setSelectedMonth(addMonths(selectedMonth, 1))}
+                style={styles.navButton}
+            >
+                <Ionicons name="chevron-forward" size={24} color={theme.primary} />
+            </TouchableOpacity>
+            </View>
+        </View>
+        </View>
+
 
         {/* Add Transaction Button - Estilo mais robusto */}
         <View style={styles.addButtonContainer}>
@@ -181,34 +229,49 @@ export default function Home() {
         </View>
 
         {/* Recent Transactions Section */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.text.secondary, marginLeft: 4 }]}>Transações Recentes</Text>
-          <View style={[styles.sectionContent, { backgroundColor: theme.surface, shadowColor: theme.shadow || theme.text.primary }]}>
-            {recentTransactions.length > 0 ? recentTransactions.map((transaction, index) => (
-              <TransactionSettingItem
-                key={transaction.id}
-                icon={{ 
-                  name: transaction.type === 'income' ? 'arrow-up' : 'arrow-down', 
-                  bg: transaction.type === 'income' ? '#4CAF50' : '#F44336' 
-                }}
-                title={transaction.description}
-                subtitle={new Date(transaction.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
-                amount={`${transaction.type === 'income' ? '+' : '-'}${currency.symbol}${Math.abs(transaction.amount).toFixed(2)}`}
-                amountColor={transaction.type === 'income' ? (theme.success || '#4CAF50') : (theme.danger || '#F44336')}
-                onPress={() => router.push({ 
-                  pathname: '/transactionForm', 
-                  params: { transactionId: String(transaction.id) } 
-                })}
-                isLast={index === recentTransactions.length - 1}
-              />
-            )) : (
-              <View style={styles.emptyStateContainer}>
-                <Ionicons name="reader-outline" size={48} color={theme.text.secondary} />
-                <Text style={[styles.emptyStateText, {color: theme.text.secondary}]}>Nenhuma transação recente.</Text>
-              </View>
-            )}
-          </View>
-        </View>
+<View style={styles.section}>
+  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+    <TouchableOpacity onPress={() => setSelectedMonth(subMonths(selectedMonth, 1))}>
+      <Ionicons name="chevron-back" size={20} color={theme.text.secondary} />
+    </TouchableOpacity>
+    <Text style={[styles.sectionTitle, { color: theme.text.secondary }]}>
+      {format(selectedMonth, 'MMMM yyyy', { locale: ptBR })}
+    </Text>
+    <TouchableOpacity onPress={() => setSelectedMonth(addMonths(selectedMonth, 1))}>
+      <Ionicons name="chevron-forward" size={20} color={theme.text.secondary} />
+    </TouchableOpacity>
+  </View>
+
+  <View style={[styles.sectionContent, { backgroundColor: theme.surface, shadowColor: theme.shadow || theme.text.primary }]}>
+    {filteredByMonth.length > 0 ? filteredByMonth.map((transaction, index) => (
+      <TransactionSettingItem
+        key={transaction.id}
+        icon={{
+          name: transaction.type === 'income' ? 'arrow-up' : 'arrow-down',
+          bg: transaction.type === 'income' ? '#4CAF50' : '#F44336'
+        }}
+        title={transaction.description}
+        subtitle={new Date(transaction.date).toLocaleDateString(undefined, {
+          year: 'numeric', month: 'short', day: 'numeric'
+        })}
+        amount={`${transaction.type === 'income' ? '+' : '-'}${currency.symbol}${Math.abs(transaction.amount).toFixed(2)}`}
+        amountColor={transaction.type === 'income' ? (theme.success || '#4CAF50') : (theme.danger || '#F44336')}
+        onPress={() => router.push({
+          pathname: '/transactionForm',
+          params: { transactionId: String(transaction.id) }
+        })}
+        isLast={index === filteredByMonth.length - 1}
+      />
+    )) : (
+      <View style={styles.emptyStateContainer}>
+        <Ionicons name="reader-outline" size={48} color={theme.text.secondary} />
+        <Text style={[styles.emptyStateText, { color: theme.text.secondary }]}>
+          Nenhuma transação neste mês.
+        </Text>
+      </View>
+    )}
+  </View>
+</View>
 
         {/* Footer (opcional, mas para manter consistência com Settings) */}
         <View style={styles.footer}>
@@ -328,7 +391,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
-  addButtonText: {
+    monthNavigation: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    },
+    navButton: {
+    padding: 8,
+    borderRadius: 20,
+    },
+      addButtonText: {
     color: '#fff',
     fontSize: 16, // Ajustado
     fontWeight: '600',

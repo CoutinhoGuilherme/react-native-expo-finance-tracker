@@ -69,7 +69,7 @@ export default function TransactionItem({
   const handleTouchEnd = (event: GestureResponderEvent) => {
     touchEndX.current = event.nativeEvent.pageX;
     const swipeDistance = Math.abs(touchEndX.current - touchStartX.current);
-    
+
     if (swipeDistance < SWIPE_THRESHOLD && onPress) {
       onPress();
     }
@@ -105,9 +105,9 @@ export default function TransactionItem({
             shadowColor: theme.shadowColor,
           }
         ]}>
-          <Ionicons 
-            name={isIncome ? "arrow-up" : "arrow-down"} 
-            size={20} 
+          <Ionicons
+            name={isIncome ? "arrow-up" : "arrow-down"}
+            size={20}
             color={colors.icon}
           />
         </View>
@@ -122,11 +122,18 @@ export default function TransactionItem({
             <Text style={[styles.category, { color: theme.text.secondary }]}>
               {category}
             </Text>
+            <Text style={[styles.date, { color: theme.text.secondary }]}>
+              {new Date(date).toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              })}
+            </Text>
             {isRecurring && (
               <View style={[styles.recurringBadge, { backgroundColor: theme.primary + '15' }]}>
-                <Ionicons 
-                  name="repeat" 
-                  size={12} 
+                <Ionicons
+                  name="repeat"
+                  size={12}
                   color={theme.primary}
                   style={styles.recurringIcon}
                 />
@@ -138,19 +145,13 @@ export default function TransactionItem({
           </View>
         </View>
       </View>
-      
+
       <View style={styles.rightContent}>
         <Text style={[
           styles.amount,
           { color: colors.text }
         ]}>
           {isIncome ? '+' : '-'}{currency.symbol}{Math.abs(amount).toFixed(2)}
-        </Text>
-        <Text style={[
-          styles.date,
-          { color: theme.text.secondary }
-        ]}>
-          {new Date(date).toLocaleDateString()}
         </Text>
       </View>
     </Pressable>

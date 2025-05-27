@@ -60,7 +60,7 @@ function StackNavigator() {
         name="transactionForm" 
         options={{
           presentation: 'modal',
-          headerShown: true,
+          headerShown: false,
           headerTitle: 'Add Transaction',
           headerStyle: {
             backgroundColor: theme.surface,
@@ -73,7 +73,7 @@ function StackNavigator() {
         name="currencySelect" 
         options={{
           presentation: 'modal',
-          headerShown: true,
+          headerShown: false,
           headerTitle: 'Select Currency',
           headerStyle: {
             backgroundColor: theme.surface,
@@ -86,7 +86,7 @@ function StackNavigator() {
         name="languageSelect" 
         options={{
           presentation: 'modal',
-          headerShown: true,
+          headerShown: false,
           headerTitle: 'Select Language',
           headerStyle: {
             backgroundColor: theme.surface,
@@ -99,7 +99,7 @@ function StackNavigator() {
         name="policyModal" 
         options={{
           presentation: 'modal',
-          headerShown: true,
+          headerShown: false,
           headerTitle: 'Privacy Policy',
           headerStyle: {
             backgroundColor: theme.surface,

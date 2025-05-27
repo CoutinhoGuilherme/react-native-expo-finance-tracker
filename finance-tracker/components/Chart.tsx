@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, ScrollView, Dimensions, TouchableOpacity } from 'react-native';
 import PieChart from 'react-native-pie-chart';
 import { useTransactions } from '../contexts/TransactionContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -16,33 +16,54 @@ const CATEGORY_COLORS = {
   'Other': '#D4A5A5',
 };
 
+const { width } = Dimensions.get('window');
 
-export default function Chart() {
+export default function Chart({ selectedMonth, onMonthChange }: { 
+  selectedMonth: Date, 
+  onMonthChange: (date: Date) => void 
+}) {
   const { transactions } = useTransactions();
   const { theme } = useTheme();
-  const [selectedSlice, setSelectedSlice] = useState<string | null>(null);
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  
+  // Filtra transações pelo mês selecionado
+  const filteredTransactions = transactions.filter(t => {
+    const transactionDate = new Date(t.date);
+    return (
+      transactionDate.getMonth() === selectedMonth.getMonth() &&
+      transactionDate.getFullYear() === selectedMonth.getFullYear()
+    );
+  });
 
-  const CHART_COLORS = {
-    income: '#4CAF50',
-    // expenses: '#F44336',
+  // Gera lista de meses para o scroll horizontal
+  const generateMonths = () => {
+    const months = [];
+    for (let i = 0; i < 12; i++) {
+      months.push(new Date(currentYear, i));
+    }
+    return months;
   };
 
-  // Calcular total de receitas
-  const incomeTotal = transactions
-    .filter(t => t.type === 'income')
-    .reduce((sum, t) => sum + t.amount, 0);
+  // Calcular totais
+  const calculateTotals = () => {
+    const incomeTotal = filteredTransactions
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0);
 
-  // Calcular totais por categoria de despesa
-  const expenseTotals = expenseCategories
-    .map(category => {
-      const total = transactions
-        .filter(t => t.type === 'expense' && t.category === category)
-        .reduce((sum, t) => sum + Math.abs(t.amount), 0);
-      return { category, total };
-    })
-    .filter(item => item.total > 0);
+    const expenseTotals = expenseCategories
+      .map(category => {
+        const total = filteredTransactions
+          .filter(t => t.type === 'expense' && t.category === category)
+          .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+        return { category, total };
+      })
+      .filter(item => item.total > 0);
 
-  // Preparar dados para o gráfico
+    return { incomeTotal, expenseTotals };
+  };
+
+  const { incomeTotal, expenseTotals } = calculateTotals();
+
   const hasIncome = incomeTotal > 0;
   const series = [
     ...(hasIncome ? [incomeTotal] : []),
@@ -50,61 +71,86 @@ export default function Chart() {
   ];
   
   const sliceColor = [
-    ...(hasIncome ? [CHART_COLORS.income] : []),
+    ...(hasIncome ? ['#4CAF50'] : []),
     ...expenseTotals.map(t => CATEGORY_COLORS[t.category as CategoryKey])
   ];
 
-  // Legendas do gráfico
   const legendLabels = [
-    ...(hasIncome ? ['Income'] : []),
+    ...(hasIncome ? ['Receitas'] : []),
     ...expenseTotals.map(t => t.category)
   ];
 
-  // Verificar se há dados para exibir
   const total = series.reduce((a, b) => a + b, 0);
-  if (total === 0) {
-    return (
-      <ScrollView style={{ flex: 1 }}>
-        <View style={[styles.container, { backgroundColor: theme.surface }]}>
-          <Text style={[styles.title, { color: theme.text.primary }]}>
-            There aren't any transactions to be shown.
-          </Text>
-        </View>
-      </ScrollView>
-    );
-  }
 
   return (
-    <ScrollView style={{ flex: 1 }}>
-      <View style={[styles.container, { backgroundColor: theme.surface }]}>
-        <Text style={[styles.title, { color: theme.text.primary }]}>Chart</Text>
-        <PieChart
-          widthAndHeight={250}
-          series={series}
-          sliceColor={sliceColor}
-        />
-
-      <ScrollView 
+    <View style={[styles.container, { backgroundColor: theme.surface }]}>
+      {/* Scroll horizontal de meses */}
+      <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.legendScrollContent}
+        contentContainerStyle={styles.monthsContainer}
       >
-        <View style={styles.legendContainer}>
-          {legendLabels.map((label, index) => {
-            const percentage = ((series[index] / total) * 100).toFixed(1);
-            return (
-              <View key={index} style={styles.legendItem}>
-                <View style={[styles.legendDot, { backgroundColor: sliceColor[index] }]} />
-                <Text style={[styles.legendText, { color: theme.text.primary }]}>
-                  {label} ({percentage}%)
-                </Text>
-              </View>
-            );
-          })}
-        </View>
+        {generateMonths().map((date, index) => {
+          const isSelected = date.getMonth() === selectedMonth.getMonth();
+          return (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.monthButton,
+                {
+                  backgroundColor: isSelected ? theme.primary : theme.background,
+                  borderColor: theme.border
+                }
+              ]}
+              onPress={() => onMonthChange(date)}
+            >
+              <Text style={[
+                styles.monthText,
+                { color: isSelected ? '#FFF' : theme.text.primary }
+              ]}>
+                {date.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase()}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
-      </View>
-    </ScrollView>
+
+      {/* Gráfico */}
+      {total === 0 ? (
+        <Text style={[styles.title, { color: theme.text.primary }]}>
+          Nenhuma transação neste mês
+        </Text>
+      ) : (
+        <>
+          <PieChart
+            widthAndHeight={Math.min(width * 0.8, 250)}
+            series={series}
+            sliceColor={sliceColor}
+          />
+
+          {/* Legenda */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.legendScrollContent}
+          >
+            <View style={styles.legendContainer}>
+              {legendLabels.map((label, index) => {
+                const percentage = ((series[index] / total) * 100).toFixed(1);
+                return (
+                  <View key={index} style={styles.legendItem}>
+                    <View style={[styles.legendDot, { backgroundColor: sliceColor[index] }]} />
+                    <Text style={[styles.legendText, { color: theme.text.primary }]}>
+                      {label} ({percentage}%)
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          </ScrollView>
+        </>
+      )}
+    </View>
   );
 }
 
@@ -118,6 +164,21 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     minHeight: 40,
   },
+    monthsContainer: {
+    paddingVertical: 8,
+    marginBottom: 16,
+  },
+    monthButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    marginHorizontal: 4,
+  },
+  monthText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -127,7 +188,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    // justifyContent: 'center',
+    padding: 16,
+    borderRadius: 16,
     marginTop: 20,
   },
   title: {

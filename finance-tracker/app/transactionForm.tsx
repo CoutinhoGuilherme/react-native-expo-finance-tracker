@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Pressable, ScrollView, Alert } from 'react-native';
+import {Picker} from '@react-native-picker/picker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTransactions } from '../contexts/TransactionContext';
@@ -55,6 +56,9 @@ export default function TransactionForm() {
   const [recurringType, setRecurringType] = useState<'daily' | 'weekly' | 'monthly' | 'yearly' | undefined>(
     undefined // Placeholder; use if backend supports
   );
+const [isInstallment, setIsInstallment] = useState(false);
+const [installments, setInstallments] = useState(1);
+const [installmentFrequency, setInstallmentFrequency] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
   const [recurringEndDate, setRecurringEndDate] = useState<string | null>(
     existingTransaction?.end_date || null
   );
@@ -67,56 +71,82 @@ export default function TransactionForm() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const validateForm = () => {
-    const newErrors: { [key: string]: string } = {};
-    if (!title.trim()) newErrors.title = 'Title is required';
-    if (!amount.trim()) newErrors.amount = 'Amount is required';
-    if (isNaN(parseFloat(amount))) newErrors.amount = 'Amount must be a valid number';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+const validateForm = () => {
+  const newErrors: { [key: string]: string } = {};
+  if (!title.trim()) newErrors.title = 'Título é obrigatório';
+  if (!amount.trim()) {
+    newErrors.amount = 'Valor é obrigatório';
+  } else {
+    const amountValue = parseFloat(amount);
+    if (isNaN(amountValue)) {
+      newErrors.amount = 'Valor deve ser um número válido';
+    } else if (amountValue <= 0) {
+      newErrors.amount = 'Valor deve ser maior que zero';
+    }
+  }
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
 
-  const handleSubmit = async () => {
-    if (!validateForm()) return;
+// Atualize a função handleSubmit
+const handleSubmit = async () => {
+  if (!validateForm()) return;
 
-    try {
-      const transactionData = {
-        id: Number(params.transactionId),
-        amount: parseFloat(amount),
-        description: title,
-        type: transactionType,
-        date: date.toISOString(),
-        is_recurring: isRecurring,
-        category,
-        end_date: isRecurring && recurringEndDate ? new Date(recurringEndDate).toISOString() : null,
-        user_id: existingTransaction?.user_id ?? 0,  
-        created_at: existingTransaction?.created_at ?? new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
+  try {
+    const transactionsToAdd = [];
+    const baseAmount = parseFloat(amount) / (isInstallment ? installments : 1);
 
-      if (isEditMode && params.transactionId) {
-        await updateTransaction({
-          ...transactionData,
-        });
-      } else {
-        await addTransaction(transactionData);
+    for (let i = 0; i < (isInstallment ? installments : 1); i++) {
+      const transactionDate = new Date(date);
+      
+      // Calcular data do parcelamento
+      switch (installmentFrequency) {
+        case 'monthly':
+          transactionDate.setMonth(transactionDate.getMonth() + i);
+          break;
+        case 'weekly':
+          transactionDate.setDate(transactionDate.getDate() + (i * 7));
+          break;
+        case 'yearly':
+          transactionDate.setFullYear(transactionDate.getFullYear() + i);
+          break;
+        case 'daily':
+          transactionDate.setDate(transactionDate.getDate() + i);
+          break;
       }
 
-      router.back();
-    } catch (error) {
-      console.error('Error saving transaction:', error);
-      Alert.alert(
-        'Error',
-        'Failed to save transaction. Please try again.',
-        [{ text: 'OK' }]
-      );
+      transactionsToAdd.push({
+        id: Number(params.transactionId),
+        amount: transactionType === 'expense' ? -baseAmount : baseAmount,
+        description: `${title} (${i + 1}/${installments})`,
+        type: transactionType,
+        date: transactionDate.toISOString(),
+        is_recurring: isRecurring,
+        category,
+        installmentData: isInstallment ? {
+          total: installments,
+          current: i + 1,
+          frequency: installmentFrequency
+        } : null
+      });
     }
-  };
+
+    if (isEditMode && params.transactionId) {
+      await updateTransaction(transactionsToAdd[0]);
+    } else {
+      await Promise.all(transactionsToAdd.map(t => addTransaction(t)));
+    }
+
+    router.replace('/(tabs)/home');
+  } catch (error) {
+    Alert.alert('Erro', 'Falha ao salvar transação');
+  }
+};
 
   const handleDelete = async () => {
     if (params.transactionId) {
       await deleteTransaction(Number(params.transactionId));
-      router.back();
+      router.replace('/(tabs)/home');
     }
   };
   
@@ -208,13 +238,34 @@ export default function TransactionForm() {
           }
         ]}>
           <TextInput
-            style={[styles.amountInput, { color: theme.text.primary }]}
-            placeholder="0.00"
-            placeholderTextColor={theme.text.secondary}
-            keyboardType="decimal-pad"
-            value={amount}
-            onChangeText={setAmount}
-          />
+              style={[styles.amountInput, { color: theme.text.primary }]}
+              placeholder="0.00"
+              placeholderTextColor={theme.text.secondary}
+              keyboardType="decimal-pad"
+              value={amount}
+              onChangeText={(text) => {
+                // Remove caracteres não numéricos exceto ponto decimal
+                const cleanedText = text.replace(/[^0-9.]/g, '');
+                // Garante apenas um ponto decimal
+                const parts = cleanedText.split('.');
+                if (parts.length <= 2) {
+                  setAmount(cleanedText);
+                }
+              }}
+            />
+
+            // Adicione mensagens de erro abaixo dos inputs
+            {errors.title && (
+              <Text style={[styles.errorText, { color: theme.danger }]}>
+                {errors.title}
+              </Text>
+            )}
+
+            {errors.amount && (
+              <Text style={[styles.errorText, { color: theme.danger }]}>
+                {errors.amount}
+              </Text>
+            )}
           <TextInput
             style={[styles.titleInput, { color: theme.text.primary }]}
             placeholder="Transaction Title"
@@ -289,6 +340,43 @@ export default function TransactionForm() {
     onRecurringTypeChange={setRecurringType}
     onEndDateChange={setRecurringEndDate}
   />
+
+  <View style={styles.sectionContainer}>
+  <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>
+    Parcelamento
+  </Text>
+  <View style={styles.installmentRow}>
+    <Pressable
+      style={[styles.toggleButton, isInstallment && styles.activeToggle]}
+      onPress={() => setIsInstallment(!isInstallment)}
+    >
+      <Text style={{ color: isInstallment ? '#fff' : theme.text.primary }}>
+        {isInstallment ? 'Ativo' : 'Inativo'}
+      </Text>
+    </Pressable>
+    
+    {isInstallment && (
+      <>
+        <TextInput
+          style={[styles.installmentInput, { color: theme.text.primary }]}
+          keyboardType="numeric"
+          value={String(installments)}
+          onChangeText={(t) => setInstallments(Math.max(1, parseInt(t) || 1))}
+        />
+        <Picker
+          selectedValue={installmentFrequency}
+          onValueChange={(itemValue) => setInstallmentFrequency(itemValue)}
+          style={{ flex: 1 }}
+        >
+          <Picker.Item label="Mensal" value="monthly" />
+          <Picker.Item label="Semanal" value="weekly" />
+          <Picker.Item label="Anual" value="yearly" />
+          <Picker.Item label="Diário" value="daily" />
+        </Picker>
+      </>
+    )}
+  </View>
+</View>
 </View>
           <Pressable 
             style={[styles.button, { backgroundColor: theme.primary }]}
@@ -419,7 +507,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#F44336',
     fontSize: 12,
-    marginTop: -12,
+    marginTop: -8,
     marginBottom: 12,
     marginLeft: 4,
   },
