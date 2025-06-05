@@ -13,12 +13,12 @@ import { nameValidator } from "../helpers/nameValidator";
 import { Ionicons } from "@expo/vector-icons";
 import Paragraph from "../components/Paragraph";
 import { dateValidator } from "../helpers/dateValidator";
-import { formatBirthdayInput } from "../helpers/dateFormatter";
+import { formatBirthdayInput, formatToISO } from "../helpers/dateFormatter";
 
 export default function RegisterScreen() {
   const router = useRouter();
   const { signUp } = useAuth();
-  const [name, setName] = useState({ value: "", error: "" });
+  const [firstName, setFirstName] = useState({ value: "", error: "" });
   const [lastName, setLastName] = useState({ value: "", error: "" });
   const [email, setEmail] = useState({ value: "", error: "" });
   const [birthday, setBirthday] = useState({ value: "", error: "" });
@@ -31,25 +31,49 @@ export default function RegisterScreen() {
   const handleRegister = async () => {
     try {
       setIsLoading(true);
+      
+      const isoBirthday: string = formatToISO(birthday.value) || '';
+
+      console.log("Dados enviados para signUp:", {
+      email: email.value,
+      password: password.value,
+      first_name: firstName.value,
+      last_name: lastName.value,
+      birthday: isoBirthday,
+    });
+   
       await signUp(
         email.value,
         password.value,
-        `${name.value} ${lastName.value}`,
-        birthday.value
+        firstName.value,
+        lastName.value,
+        isoBirthday
       );
+      
       Alert.alert("Success", "User registered successfully");
       router.push("/(tabs)/home");
     } catch (error: any) {
-      console.error("Registration error:", error);
-      Alert.alert("Error", error.message || "Failed to register user");
+      console.error("Registration error:", error.response?.data || error);
+      let errorMessage = "Failed to register user";
+      
+      // Tratar erros específicos da API
+      if (error.response) {
+        if (error.response.status === 400) {
+          errorMessage = error.response.data.detail || "Invalid data provided";
+        } else if (error.response.status === 409) {
+          errorMessage = "Email already registered";
+        }
+      }
+      
+      Alert.alert("Error", errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   const onSignUpPressed = () => {
-    const nameError = nameValidator(name.value);
-    const lastNameError = nameValidator(lastName.value);
+    const firstNameError = nameValidator(firstName.value, "First name");
+    const lastNameError = nameValidator(lastName.value, "Last name");
     const emailError = emailValidator(email.value);
     const birthdayError = dateValidator(birthday.value);
     const passwordError = passwordValidator(password.value);
@@ -57,17 +81,17 @@ export default function RegisterScreen() {
       password.value !== confirmPassword.value ? "Passwords don't match" : "";
 
     if (
-      nameError ||
+      firstNameError ||
       lastNameError ||
       emailError ||
       birthdayError ||
       passwordError ||
       confirmPasswordError
     ) {
-      setName({ ...name, error: nameError });
+      setFirstName({ ...firstName, error: firstNameError });
       setLastName({ ...lastName, error: lastNameError });
       setEmail({ ...email, error: emailError });
-      setBirthday({ ...birthday, error: birthdayError });
+      // setBirthday({ ...birthday, error: birthdayError });
       setPassword({ ...password, error: passwordError });
       setConfirmPassword({ ...confirmPassword, error: confirmPasswordError });
       return;
@@ -77,7 +101,7 @@ export default function RegisterScreen() {
 
   return (
     <Background style={styles.container}>
-      <BackButton goBack={router.goBack} />
+      <BackButton goBack={router.back} />
       <View style={styles.logoContainer}>
         <View style={styles.logoCircle}>
           <Ionicons name="wallet" size={60} color="#2563eb" />
@@ -86,31 +110,33 @@ export default function RegisterScreen() {
       <Header style={styles.title}>FinWise</Header>
       <Paragraph style={styles.subtitle}>Smart Money Management</Paragraph>
 
-  <View style={styles.nameContainer}>
-    <TextInput
-      label="First Name"
-      placeholder="First Name"
-      style={styles.input}
-      returnKeyType="next"
-      value={name.value}
-      onChangeText={(text) => setName({ value: text, error: "" })}
-      error={!!name.error}
-      errorText={name.error}
-      leftIcon={<Ionicons name="person-outline" size={20} color="#64748b" />}
-    />
-  
-    <TextInput
-      label="Last Name"
-      placeholder="Doe"
-      style={styles.input}
-      returnKeyType="next"
-      value={lastName.value}
-      onChangeText={(text) => setLastName({ value: text, error: "" })}
-      error={!!lastName.error}
-      errorText={lastName.error}
-      leftIcon={<Ionicons name="people-outline" size={20} color="#64748b" />}
-    />
-</View>
+      <View style={styles.nameContainer}>
+        <TextInput
+          label="First Name"
+          placeholder="John"
+          style={styles.input}
+          returnKeyType="next"
+          value={firstName.value}
+          onChangeText={(text) => setFirstName({ value: text, error: "" })}
+          error={!!firstName.error}
+          errorText={firstName.error}
+          autoCapitalize="words"
+          leftIcon={<Ionicons name="person-outline" size={20} color="#64748b" />}
+        />
+      
+        <TextInput
+          label="Last Name"
+          placeholder="Doe"
+          style={styles.input}
+          returnKeyType="next"
+          value={lastName.value}
+          onChangeText={(text) => setLastName({ value: text, error: "" })}
+          error={!!lastName.error}
+          errorText={lastName.error}
+          autoCapitalize="words"
+          leftIcon={<Ionicons name="people-outline" size={20} color="#64748b" />}
+        />
+      </View>
 
       <TextInput
         label="Email"
@@ -220,11 +246,12 @@ export default function RegisterScreen() {
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    paddingVertical: 40,
+    paddingVertical: 20,
   },
   logoContainer: {
     alignItems: 'center',
@@ -261,7 +288,7 @@ const styles = StyleSheet.create({
   },
   nameContainer: {
     flexDirection: 'column',
-    gap: 5,
+    gap: 1,
     width: '100%',
   },
   nameInput: {
@@ -270,7 +297,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: 'rgba(255,255,255,0.95)',
     borderRadius: 12,
-    marginVertical: 1,
+    marginVertical: 0,
     elevation: 3,
     shadowColor: '#1e3a8a',
     shadowOffset: { width: 0, height: 2 },

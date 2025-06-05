@@ -3,19 +3,22 @@ import React, { createContext, useState, useContext, ReactNode, useEffect } from
 import api from '../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { Alert } from 'react-native';
 
 interface AuthContextData {
   user: User | null;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, name: string) => Promise<void>;
+  signUp: (email: string, password: string, firstName: string, lastName: string, birthday: string | null) => Promise<void>;
   signOut: () => void;
 }
 
 interface User {
   id: number;
   email: string;
-  full_name: string;
+  first_name: string;  // Alterado para campos separados
+  last_name: string;   // Alterado para campos separados
   is_active: boolean;
+  birthday?: string;   // Novo campo
 }
 
 
@@ -73,27 +76,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const user = userResponse.data;
 
-    // Salva o nome do usuário no AsyncStorage
-    await AsyncStorage.setItem('username', user.name);
-
+    await AsyncStorage.setItem('userData', JSON.stringify({
+      firstName: user.first_name,
+      lastName: user.last_name,
+      email: user.email
+    }));
 
     setUser(user);
   };
 
-  const signUp = async (email: string, password: string, name: string) => {
+  const signUp = async (email: string, password: string, firstName: string, lastName: string, birthday: string | null) => {
     try {
       await api.post('/users/', {
         email,
         password,
-        name,
+        first_name: firstName,
+        last_name: lastName,
+        birthday
       });
 
     await signIn(email, password);
 
-    } catch (error) {
-      console.error('Erro ao registrar:', error);
-      throw new Error('Erro ao registrar usuário');
-    }
+    } catch (error: any) {
+  console.error("Erro ao registrar:", error);
+
+  if (error.response) {
+    console.log("Detalhes do erro:", JSON.stringify(error.response.data, null, 2));
+    Alert.alert("Erro 422", JSON.stringify(error.response.data, null, 2));
+  } else {
+    console.log("Erro desconhecido:", error.message || error);
+    Alert.alert("Erro", error.message || "Erro desconhecido");
+  }
+}
   };
 
   const signOut = async () => {

@@ -25,7 +25,7 @@ export default function ResetPasswordScreen() {
 
   return (
     <Background>
-      <BackButton goBack={router.goBack} />
+      <BackButton goBack={router.back} />
       <View style={styles.logoContainer}>
         <View style={styles.logoCircle}>
           <Ionicons name="wallet" size={60} color="#2563eb" />

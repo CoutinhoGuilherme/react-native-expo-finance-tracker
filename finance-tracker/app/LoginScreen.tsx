@@ -18,7 +18,9 @@ export default function LoginScreen() {
   const [email, setEmail] = useState({ value: "", error: "" });
   const [password, setPassword] = useState({ value: "", error: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
 
   const handleLogin = async () => {
     try {
@@ -46,7 +48,7 @@ export default function LoginScreen() {
 
   return (
     <Background>
-      <BackButton goBack={router.goBack} />
+      <BackButton goBack={router.back} />
       <View style={styles.logoContainer}>
         <View style={styles.logoCircle}>
           <Ionicons name="wallet" size={60} color="#2563eb" />

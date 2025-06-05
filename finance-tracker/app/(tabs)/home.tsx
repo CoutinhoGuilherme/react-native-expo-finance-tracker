@@ -25,6 +25,7 @@ import {ptBR} from 'date-fns/locale';
 
 // Importando Dimensions como na tela Settings, caso necessário para estilos futuros
 import { Dimensions } from 'react-native';
+import api from '@/services/api';
 
 const { width } = Dimensions.get('window');
 
@@ -59,21 +60,27 @@ const handleMonthChange = (newDate: Date) => {
   setSelectedMonth(newDate);
 };
 
-  useEffect(() => {
-    const loadUsername = async () => {
-      const name = await AsyncStorage.getItem('username');
-      if (name) setUsername(name);
-    };
-    loadUsername();
-  }, []);
+const [firstName, setFirstName] = useState('');
 
-  useEffect(() => {
-    AsyncStorage.getItem('token').then(token => {
-      if (!token) {
-        router.replace('/LoginScreen'); ''
-      }
-    });
-  }, []);
+useEffect(() => {
+  const loadUser = async () => {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const response = await api.get('/users/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setFirstName(response.data.first_name);
+    } catch (error) {
+      console.error('Erro ao carregar usuário:', error);
+    }
+  };
+
+  loadUser();
+}, []);
+
   
   const filteredTransactions = transactions.filter(transaction => {
   const transactionDate = new Date(transaction.date);
@@ -150,7 +157,7 @@ const totals = filteredTransactions.reduce(
             Saldo Atual: {currency.symbol}{totals.balance.toFixed(2)}
           </Text>
           <Text style={[styles.headerSubtitle, { color: theme.text.secondary }]}>
-            Olá, {username} 👋 ({new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric' })})
+            Olá, {firstName} 👋 ({new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric' })})
           </Text>
         </View>
 

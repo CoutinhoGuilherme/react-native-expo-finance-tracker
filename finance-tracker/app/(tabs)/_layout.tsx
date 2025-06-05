@@ -31,7 +31,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="transactions"
         options={{
-          title: 'Transactions',
+          title: 'Transações',
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="list" size={size} color={color} />
@@ -41,7 +41,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          title: 'Configurações',
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings" size={size} color={color} />

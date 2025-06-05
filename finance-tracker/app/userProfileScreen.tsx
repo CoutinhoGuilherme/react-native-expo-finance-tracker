@@ -19,6 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { formatBirthdayInput } from '../helpers/dateFormatter';
 import { nameValidator } from '../helpers/nameValidator';
 import { dateValidator } from '../helpers/dateValidator';
+import { router } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
@@ -27,8 +28,11 @@ export default function UserProfileScreen() {
   const navigation = useNavigation();
   const [firstName, setFirstName] = useState({ value: '', error: '' });
   const [lastName, setLastName] = useState({ value: '', error: '' });
-  const [birthday, setBirthday] = useState({ value: '', error: '' });
   const [email, setEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -46,10 +50,9 @@ export default function UserProfileScreen() {
         headers: { Authorization: `Bearer ${token}` },
       });
       
-      const [first, ...rest] = response.data.name.split(' ');
-      setFirstName({ value: first, error: '' });
-      setLastName({ value: rest.join(' '), error: '' });
-      setBirthday({ value: response.data.birthday, error: '' });
+      // const [first, ...rest] = response.data.name.split(' ');
+      setFirstName({ value: response.data.first_name, error: '' });
+      setLastName({ value: response.data.last_name, error: '' });
       setEmail(response.data.email);
     } catch (error) {
       console.error('Erro ao carregar dados do usuário:', error);
@@ -62,13 +65,11 @@ export default function UserProfileScreen() {
   const validateFields = () => {
     const firstNameError = nameValidator(firstName.value);
     const lastNameError = nameValidator(lastName.value);
-    const birthdayError = dateValidator(birthday.value);
 
     setFirstName({ ...firstName, error: firstNameError });
     setLastName({ ...lastName, error: lastNameError });
-    setBirthday({ ...birthday, error: birthdayError });
 
-    return !(firstNameError || lastNameError || birthdayError);
+    return !(firstNameError || lastNameError);
   };
 
   const updateUser = async () => {
@@ -102,7 +103,7 @@ export default function UserProfileScreen() {
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.primary} />
           <Text style={[styles.loadingText, { color: theme.text.secondary }]}>
-            Loading profile...
+            Carregando perfil...
           </Text>
         </View>
       </SafeAreaView>
@@ -126,10 +127,10 @@ export default function UserProfileScreen() {
             />
           </View>
           <Text style={[styles.title, { color: theme.text.primary }]}>
-            My profile
+            Meu perfil
           </Text>
           <Text style={[styles.subtitle, { color: theme.text.secondary }]}>
-            Manage your informations
+            Gerenciar suas informações
           </Text>
         </View>
 
@@ -149,7 +150,7 @@ export default function UserProfileScreen() {
                 style={styles.labelIcon}
               />
               <Text style={[styles.label, { color: theme.text.secondary }]}>
-                Name
+                Nome
               </Text>
             </View>
             <View style={[styles.inputContainer, { 
@@ -160,6 +161,7 @@ export default function UserProfileScreen() {
                 style={[styles.input, { color: theme.text.primary }]}
                 value={firstName.value}
                 onChangeText={(text) => setFirstName({ value: text, error: '' })}
+                editable={false}
                 placeholder="Type your first name"
                 placeholderTextColor={theme.text.secondary}
               />
@@ -182,7 +184,7 @@ export default function UserProfileScreen() {
                 style={styles.labelIcon}
               />
               <Text style={[styles.label, { color: theme.text.secondary }]}>
-                Last Name
+                Sobrenome
               </Text>
             </View>
             <View style={[styles.inputContainer, { 
@@ -193,6 +195,7 @@ export default function UserProfileScreen() {
                 style={[styles.input, { color: theme.text.primary }]}
                 value={lastName.value}
                 onChangeText={(text) => setLastName({ value: text, error: '' })}
+                editable={false}
                 placeholder="Type your last name"
                 placeholderTextColor={theme.text.secondary}
               />
@@ -205,74 +208,76 @@ export default function UserProfileScreen() {
             )}
           </View>
 
-          {/* Birthday */}
           <View style={styles.inputGroup}>
-            <View style={styles.labelContainer}>
-              <Ionicons 
-                name="calendar-outline" 
-                size={16} 
-                color={theme.text.secondary} 
-                style={styles.labelIcon}
-              />
-              <Text style={[styles.label, { color: theme.text.secondary }]}>
-                Birthday
-              </Text>
-            </View>
-            <View style={[styles.inputContainer, { 
-              borderColor: birthday.error ? '#ff4757' : theme.border,
-              backgroundColor: theme.inputBackground || theme.surface || theme.background
-            }]}>
-              <TextInput
-                style={[styles.input, { color: theme.text.primary }]}
-                value={birthday.value}
-                onChangeText={(text) => {
-                  const formatted = formatBirthdayInput(text);
-                  setBirthday({ value: formatted, error: '' });
-                }}
-                placeholder="DD/MM/AAAA"
-                placeholderTextColor={theme.text.secondary}
-                keyboardType="number-pad"
-                maxLength={10}
-              />
-            </View>
-            {birthday.error && (
-              <View style={styles.errorContainer}>
-                <Ionicons name="alert-circle" size={14} color="#ff4757" />
-                <Text style={styles.errorText}>{birthday.error}</Text>
-              </View>
-            )}
+          <View style={styles.labelContainer}>
+            <Ionicons name="mail-outline" size={16} color={theme.text.secondary} style={styles.labelIcon} />
+            <Text style={[styles.label, { color: theme.text.secondary }]}>Email</Text>
           </View>
+          <View style={[styles.inputContainer, { borderColor: theme.border, backgroundColor: theme.inputBackground || theme.surface }]}>
+            <TextInput
+              style={[styles.input, { color: theme.text.primary }]}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Enter your email"
+              placeholderTextColor={theme.text.secondary}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
+        </View>
 
-          {/* Email (não editável) */}
-          <View style={styles.inputGroup}>
-            <View style={styles.labelContainer}>
-              <Ionicons 
-                name="mail-outline" 
-                size={16} 
-                color={theme.text.secondary} 
-                style={styles.labelIcon}
-              />
-              <Text style={[styles.label, { color: theme.text.secondary }]}>
-                Email
-              </Text>
-              <View style={[styles.lockBadge, { backgroundColor: theme.surfaceDisabled || theme.border }]}>
-                <Ionicons name="lock-closed" size={10} color={theme.text.secondary} />
-              </View>
-            </View>
-            <View style={[styles.inputContainer, { 
-              borderColor: theme.border,
-              backgroundColor: theme.surfaceDisabled || theme.border,
-              opacity: 0.7
-            }]}>
-              <TextInput
-                style={[styles.input, { color: theme.text.secondary }]}
-                value={email}
-                editable={false}
-                placeholder="Email não editável"
-                placeholderTextColor={theme.text.secondary}
-              />
-            </View>
+        
+        {/* Nova senha */}
+        <View style={styles.inputGroup}>
+          <View style={styles.labelContainer}>
+            <Ionicons name="lock-closed-outline" size={16} color={theme.text.secondary} style={styles.labelIcon} />
+            <Text style={[styles.label, { color: theme.text.secondary }]}>Nova Senha</Text>
           </View>
+          <View style={[styles.inputContainer, { flexDirection: 'row', alignItems: 'center', borderColor: theme.border, backgroundColor: theme.inputBackground || theme.surface }]}>
+            <TextInput
+              style={[styles.input, { flex: 1, color: theme.text.primary }]}
+              value={newPassword}
+              onChangeText={setNewPassword}
+              placeholder="Senha"
+              placeholderTextColor={theme.text.secondary}
+              secureTextEntry={!showPassword}
+            />
+            <Pressable onPress={() => setShowPassword(!showPassword)} hitSlop={10}>
+              <Ionicons
+                name={showPassword ? "eye-off-outline" : "eye-outline"}
+                size={20}
+                color={theme.text.secondary}
+                style={{ paddingHorizontal: 12 }}
+              />
+            </Pressable>
+          </View>
+        </View>
+
+        {/* Confirmar nova senha */}
+        <View style={styles.inputGroup}>
+          <View style={styles.labelContainer}>
+            <Ionicons name="lock-closed-outline" size={16} color={theme.text.secondary} style={styles.labelIcon} />
+            <Text style={[styles.label, { color: theme.text.secondary }]}>Confirmar Senha</Text>
+          </View>
+          <View style={[styles.inputContainer, { flexDirection: 'row', alignItems: 'center', borderColor: theme.border, backgroundColor: theme.inputBackground || theme.surface }]}>
+            <TextInput
+              style={[styles.input, { flex: 1, color: theme.text.primary }]}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              placeholder="Confirmar senha"
+              placeholderTextColor={theme.text.secondary}
+              secureTextEntry={!showConfirmPassword}
+            />
+            <Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)} hitSlop={10}>
+              <Ionicons
+                name={showConfirmPassword ? "eye-off-outline" : "eye-outline"}
+                size={20}
+                color={theme.text.secondary}
+                style={{ paddingHorizontal: 12 }}
+              />
+            </Pressable>
+          </View>
+        </View>
 
           <Pressable 
             style={[styles.saveButton, { 
@@ -285,21 +290,61 @@ export default function UserProfileScreen() {
             {saving ? (
               <View style={styles.buttonContent}>
                 <ActivityIndicator size="small" color="white" />
-                <Text style={styles.buttonText}>Saving...</Text>
+                <Text style={styles.buttonText}>Salvando...</Text>
               </View>
             ) : (
               <View style={styles.buttonContent}>
                 {/* <Ionicons name="checkmark" size={20} color="white" /> */}
-                <Text style={styles.buttonText}>Save</Text>
+                <Text style={styles.buttonText}>Salvar</Text>
               </View>
             )}
           </Pressable>
+
+
+          <Pressable
+              style={{
+                marginTop: 20,
+                paddingVertical: 14,
+                backgroundColor: '#dc2626',
+                borderRadius: 8,
+                alignItems: 'center',
+              }}
+              onPress={() =>
+                Alert.alert(
+                  'Confirm Deletion',
+                  'Are you sure you want to delete your account? This cannot be undone.',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'Delete',
+                      style: 'destructive',
+                      onPress: async () => {
+                        try {
+                          const token = await AsyncStorage.getItem('token');
+                          await api.delete('/users/me', {
+                            headers: { Authorization: `Bearer ${token}` },
+                          });
+                          await AsyncStorage.removeItem('token');
+                          Alert.alert('Account Deleted', 'Your account has been successfully deleted.');
+                          router.replace('/LoginScreen');
+                        } catch (error) {
+                          console.error('Erro ao excluir usuário:', error);
+                          Alert.alert('Error', 'Failed to delete account.');
+                        }
+                      },
+                    },
+                  ]
+                )
+              }
+            >
+          <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Deletar Conta</Text>
+        </Pressable>
         </View>
 
         {/* Footer Info */}
         <View style={styles.footer}>
           <Text style={[styles.footerText, { color: theme.text.secondary }]}>
-            Your personal information is kept safe
+            Suas informações pessoais são mantidas em segurança
           </Text>
         </View>
       </ScrollView>
