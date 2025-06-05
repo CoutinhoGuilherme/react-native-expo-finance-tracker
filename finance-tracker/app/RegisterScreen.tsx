@@ -33,14 +33,6 @@ export default function RegisterScreen() {
       setIsLoading(true);
       
       const isoBirthday: string = formatToISO(birthday.value) || '';
-
-      console.log("Dados enviados para signUp:", {
-      email: email.value,
-      password: password.value,
-      first_name: firstName.value,
-      last_name: lastName.value,
-      birthday: isoBirthday,
-    });
    
       await signUp(
         email.value,

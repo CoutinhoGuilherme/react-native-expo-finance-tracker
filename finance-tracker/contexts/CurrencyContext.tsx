@@ -16,43 +16,43 @@ const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined
 export const currencies = [
   { symbol: '$', code: 'USD' },   // US Dollar
   { symbol: '€', code: 'EUR' },   // Euro
-  { symbol: '£', code: 'GBP' },   // British Pound
-  { symbol: '¥', code: 'JPY' },   // Japanese Yen
-  { symbol: '$', code: 'CAD' },   // Canadian Dollar
-  { symbol: '$', code: 'AUD' },   // Australian Dollar
-  { symbol: 'Fr', code: 'CHF' },  // Swiss Franc
-  { symbol: '¥', code: 'CNY' },   // Chinese Yuan
-  { symbol: '₹', code: 'INR' },   // Indian Rupee
-  { symbol: '₩', code: 'KRW' },   // South Korean Won
-  { symbol: '$', code: 'NZD' },   // New Zealand Dollar
-  { symbol: 'kr', code: 'SEK' },  // Swedish Krona
-  { symbol: '$', code: 'SGD' },   // Singapore Dollar
-  { symbol: '฿', code: 'THB' },   // Thai Baht
-  { symbol: '₺', code: 'TRY' },   // Turkish Lira
-  { symbol: 'R', code: 'ZAR' },   // South African Rand
-  { symbol: '₽', code: 'RUB' },   // Russian Ruble
+  // { symbol: '£', code: 'GBP' },   // British Pound
+  // { symbol: '¥', code: 'JPY' },   // Japanese Yen
+  // { symbol: '$', code: 'CAD' },   // Canadian Dollar
+  // { symbol: '$', code: 'AUD' },   // Australian Dollar
+  // { symbol: 'Fr', code: 'CHF' },  // Swiss Franc
+  // { symbol: '¥', code: 'CNY' },   // Chinese Yuan
+  // { symbol: '₹', code: 'INR' },   // Indian Rupee
+  // { symbol: '₩', code: 'KRW' },   // South Korean Won
+  // { symbol: '$', code: 'NZD' },   // New Zealand Dollar
+  // { symbol: 'kr', code: 'SEK' },  // Swedish Krona
+  // { symbol: '$', code: 'SGD' },   // Singapore Dollar
+  // { symbol: '฿', code: 'THB' },   // Thai Baht
+  // { symbol: '₺', code: 'TRY' },   // Turkish Lira
+  // { symbol: 'R', code: 'ZAR' },   // South African Rand
+  // { symbol: '₽', code: 'RUB' },   // Russian Ruble
   { symbol: 'R$', code: 'BRL' },  // Brazilian Real
-  { symbol: '$', code: 'HKD' },   // Hong Kong Dollar
-  { symbol: '$', code: 'MXN' },   // Mexican Peso
-  { symbol: 'kr', code: 'NOK' },  // Norwegian Krone
-  { symbol: 'kr', code: 'DKK' },  // Danish Krone
-  { symbol: 'zł', code: 'PLN' },  // Polish Złoty
-  { symbol: '₱', code: 'PHP' },   // Philippine Peso
-  { symbol: 'Dh', code: 'AED' },  // UAE Dirham
-  { symbol: '₪', code: 'ILS' },   // Israeli Shekel
-  { symbol: 'Kč', code: 'CZK' },  // Czech Koruna
-  { symbol: 'Ft', code: 'HUF' },  // Hungarian Forint
-  { symbol: 'RM', code: 'MYR' },  // Malaysian Ringgit
-  { symbol: '$', code: 'TWD' },   // Taiwan Dollar
-  { symbol: '₡', code: 'CRC' },   // Costa Rican Colón
-  { symbol: 'S/', code: 'PEN' },  // Peruvian Sol
-  { symbol: '$', code: 'CLP' },   // Chilean Peso
-  { symbol: '$', code: 'ARS' },   // Argentine Peso
-  { symbol: '₦', code: 'NGN' },   // Nigerian Naira
-  { symbol: '₸', code: 'KZT' },   // Kazakhstani Tenge
-  { symbol: '₴', code: 'UAH' },   // Ukrainian Hryvnia
-  { symbol: '₫', code: 'VND' },   // Vietnamese Dong
-  { symbol: 'Rp', code: 'IDR' },  // Indonesian Rupiah
+  // { symbol: '$', code: 'HKD' },   // Hong Kong Dollar
+  // { symbol: '$', code: 'MXN' },   // Mexican Peso
+  // { symbol: 'kr', code: 'NOK' },  // Norwegian Krone
+  // { symbol: 'kr', code: 'DKK' },  // Danish Krone
+  // { symbol: 'zł', code: 'PLN' },  // Polish Złoty
+  // { symbol: '₱', code: 'PHP' },   // Philippine Peso
+  // { symbol: 'Dh', code: 'AED' },  // UAE Dirham
+  // { symbol: '₪', code: 'ILS' },   // Israeli Shekel
+  // { symbol: 'Kč', code: 'CZK' },  // Czech Koruna
+  // { symbol: 'Ft', code: 'HUF' },  // Hungarian Forint
+  // { symbol: 'RM', code: 'MYR' },  // Malaysian Ringgit
+  // { symbol: '$', code: 'TWD' },   // Taiwan Dollar
+  // { symbol: '₡', code: 'CRC' },   // Costa Rican Colón
+  // { symbol: 'S/', code: 'PEN' },  // Peruvian Sol
+  // { symbol: '$', code: 'CLP' },   // Chilean Peso
+  // { symbol: '$', code: 'ARS' },   // Argentine Peso
+  // { symbol: '₦', code: 'NGN' },   // Nigerian Naira
+  // { symbol: '₸', code: 'KZT' },   // Kazakhstani Tenge
+  // { symbol: '₴', code: 'UAH' },   // Ukrainian Hryvnia
+  // { symbol: '₫', code: 'VND' },   // Vietnamese Dong
+  // { symbol: 'Rp', code: 'IDR' },  // Indonesian Rupiah
 ];
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {

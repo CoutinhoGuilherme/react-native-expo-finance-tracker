@@ -11,7 +11,7 @@ import {
   Dimensions
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
-import { languages } from '../contexts/LanguageContext';
+import { Language, languages, useLanguage } from '../contexts/LanguageContext';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -84,11 +84,10 @@ export default function LanguageSelect() {
     }
   }, [searchText]);
 
-  const handleSelect = async (language: { code: string; name: string }) => {
+  const handleSelect = async (language: Language) => {
     setLoading(true);
     try {
-      // Replace with your actual language setting logic
-      setSelectedLanguage(language);
+      await setLanguage(language); // <- ISSO AQUI
       setTimeout(() => {
         setLoading(false);
         router.back();
@@ -97,7 +96,7 @@ export default function LanguageSelect() {
       setLoading(false);
       console.error('Erro ao selecionar idioma:', error);
     }
-  };
+  };  
 
   const renderHeader = () => (
     <View style={styles.header}>
