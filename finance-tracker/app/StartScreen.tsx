@@ -39,7 +39,7 @@ export default function StartScreen() {
         mode="outlined"
         onPress={() => router.navigate("RegisterScreen")}
       >
-        Create an account
+        Criar conta
       </Button>
     </Background>
   );

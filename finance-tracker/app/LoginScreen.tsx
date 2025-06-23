@@ -26,7 +26,7 @@ export default function LoginScreen() {
     try {
       setIsLoading(true);
       await signIn(email.value, password.value);
-      Alert.alert('Sucesso', 'Login realizado com sucesso');
+      // Alert.alert('Sucesso', 'Login realizado com sucesso');
       router.replace("/(tabs)/home");
     } catch (error) {
       Alert.alert('Erro', 'Credenciais inválidas');
@@ -61,7 +61,7 @@ export default function LoginScreen() {
 
       <TextInput
         label="Email"
-        placeholder="Enter your email"
+        placeholder="Insira seu email"
         style={styles.input}
         returnKeyType="next"
         value={email.value}
@@ -76,8 +76,8 @@ export default function LoginScreen() {
       />
 
       <TextInput
-        label="Password"
-        placeholder="Enter your password"
+        label="Senha"
+        placeholder="Insira sua senha"
         style={styles.input}
         returnKeyType="done"
         value={password.value}
@@ -105,7 +105,7 @@ export default function LoginScreen() {
           onPress={() => router.navigate("ResetPasswordScreen")}
           hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
         >
-          <Text style={styles.forgot}>Forgot your password?</Text>
+          <Text style={styles.forgot}>Esqueceu sua senha?</Text>
         </TouchableOpacity>
       </View>
 
@@ -124,12 +124,12 @@ export default function LoginScreen() {
       </Button>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>Don't have an account yet?</Text>
+        <Text style={styles.footerText}>Ainda não tem uma conta?</Text>
         <TouchableOpacity 
           onPress={() => router.replace("RegisterScreen")}
           hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
         >
-          <Text style={styles.link}>Create Account</Text>
+          <Text style={styles.link}>Criar Conta</Text>
         </TouchableOpacity>
       </View>
     </Background>

@@ -36,14 +36,14 @@ export default function ResetPasswordScreen() {
         Smart Money Management
       </Paragraph>
       
-      <Header style={styles.resetHeader}>Reset your password</Header>
+      <Header style={styles.resetHeader}>Resetar sua senha</Header>
       <Paragraph style={styles.description}>
-        Enter your email to receive the reset link
+        Insira seu email para receber o link para resetar sua senha
       </Paragraph>
 
       <TextInput
         label="Email"
-        placeholder="Enter your registered email"
+        placeholder="Insira seu email registrado"
         style={styles.input}
         returnKeyType="done"
         value={email.value}
@@ -63,7 +63,7 @@ export default function ResetPasswordScreen() {
         style={styles.button}
         labelStyle={styles.buttonLabel}
       >
-        Send Instructions
+        Enviar Instruções
       </Button>
     </Background>
   );

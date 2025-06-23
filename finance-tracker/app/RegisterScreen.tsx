@@ -104,8 +104,8 @@ export default function RegisterScreen() {
 
       <View style={styles.nameContainer}>
         <TextInput
-          label="First Name"
-          placeholder="John"
+          label="Nome"
+          placeholder="Insira seu nome"
           style={styles.input}
           returnKeyType="next"
           value={firstName.value}
@@ -117,8 +117,8 @@ export default function RegisterScreen() {
         />
       
         <TextInput
-          label="Last Name"
-          placeholder="Doe"
+          label="Sobrenome"
+          placeholder="Insira seu sobrenome"
           style={styles.input}
           returnKeyType="next"
           value={lastName.value}
@@ -145,7 +145,7 @@ export default function RegisterScreen() {
       />
 
       <TextInput
-        label="Birthday"
+        label="Data de Nascimento"
         placeholder="DD/MM/YYYY"
         style={styles.input}
         returnKeyType="next"
@@ -162,8 +162,8 @@ export default function RegisterScreen() {
       />
 
       <TextInput
-        label="Password"
-        placeholder="At least 8 characters"
+        label="Senha"
+        placeholder="No mínimo 8 caracteres"
         style={styles.input}
         returnKeyType="next"
         value={password.value}
@@ -187,8 +187,8 @@ export default function RegisterScreen() {
       />
 
       <TextInput
-        label="Confirm Password"
-        placeholder="Re-enter your password"
+        label="Confirmar senha"
+        placeholder="Confirmar senha"
         style={styles.input}
         returnKeyType="done"
         value={confirmPassword.value}
@@ -221,12 +221,12 @@ export default function RegisterScreen() {
         {isLoading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          "Create Account"
+          "Criar Conta"
         )}
       </Button>
 
       <View style={styles.footer}>
-        <Text style={styles.footerText}>Already have an account?</Text>
+        <Text style={styles.footerText}>Já tem uma conta?</Text>
         <TouchableOpacity 
           onPress={() => router.replace("LoginScreen")}
           hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}

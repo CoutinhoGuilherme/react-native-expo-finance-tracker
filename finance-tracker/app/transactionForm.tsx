@@ -342,7 +342,7 @@ const handleSubmit = async () => {
   />
 
   <View style={styles.sectionContainer}>
-  <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>
+  {/* <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>
     Parcelamento
   </Text>
   <View style={styles.installmentRow}>
@@ -375,7 +375,7 @@ const handleSubmit = async () => {
         </Picker>
       </>
     )}
-  </View>
+  </View> */}
 </View>
 </View>
           <Pressable 

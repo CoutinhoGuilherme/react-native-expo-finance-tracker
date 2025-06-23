@@ -72,26 +72,32 @@ export default function UserProfileScreen() {
     return !(firstNameError || lastNameError);
   };
 
-  const updateUser = async () => {
-    if (!validateFields()) return;
+ const updateUser = async () => {
+  if (!validateFields()) return;
 
-    setSaving(true);
-    try {
-      const token = await AsyncStorage.getItem('token');
-      await api.put('/users/me', { 
-        name: `${firstName.value} ${lastName.value}`,
-        birthday: birthday.value
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      Alert.alert('Sucesso', 'Dados atualizados com sucesso.');
-    } catch (error) {
-      console.error('Erro ao atualizar usuário:', error);
-      Alert.alert('Erro', 'Não foi possível atualizar os dados do usuário.');
-    } finally {
-      setSaving(false);
-    }
-  };
+  if (newPassword && newPassword !== confirmPassword) {
+    Alert.alert('Erro', 'As senhas não coincidem.');
+    return;
+  }
+
+  setSaving(true);
+  try {
+    const token = await AsyncStorage.getItem('token');
+    await api.patch('/users/me', {
+      email: email,
+      password: newPassword || undefined,
+    }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    Alert.alert('Sucesso', 'Dados atualizados com sucesso.');
+  } catch (error) {
+    console.error('Erro ao atualizar usuário:', error);
+    Alert.alert('Erro', 'Não foi possível atualizar os dados do usuário.');
+  } finally {
+    setSaving(false);
+  }
+};
+
 
   useEffect(() => {
     loadUserData();
