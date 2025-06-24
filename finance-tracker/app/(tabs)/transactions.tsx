@@ -51,19 +51,19 @@ const typeIcons: Record<string, keyof typeof Ionicons.glyphMap> = {
 
 // Category icons mapping (example, expand as needed)
 const categoryIcons: Record<string, keyof typeof Ionicons.glyphMap> = {
-  Food: 'fast-food-outline',
-  Salary: 'cash-outline',
-  Transport: 'bus-outline',
-  Shopping: 'cart-outline',
+  Alimentação: 'fast-food-outline',
+  Salário: 'cash-outline',
+  Transporte: 'bus-outline',
+  Compras: 'cart-outline',
   Health: 'heart-outline',
-  Education: 'school-outline',
-  Bills: 'document-text-outline',
-  Entertainment: 'film-outline',
-  Other: 'apps-outline',
+  Educação: 'school-outline',
+  Contas: 'document-text-outline',
+  Lazer: 'film-outline',
+  Outros: 'apps-outline',
   Groceries: 'basket-outline',
   Rent: 'home-outline',
   Utilities: 'flash-outline',
-  Gifts: 'gift-outline'
+  Presente: 'gift-outline'
 };
 
 

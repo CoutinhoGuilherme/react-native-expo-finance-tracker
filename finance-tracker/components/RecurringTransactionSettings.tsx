@@ -35,7 +35,7 @@ export default function RecurringTransactionSettings({
     <View style={styles.container}>
       <View style={[styles.switchContainer, { backgroundColor: theme.surface }]}>
         <Text style={[styles.label, { color: theme.text.primary }]}>
-          Recurring Transaction
+          Transação Recorrente
         </Text>
         <Pressable
           style={[
@@ -99,12 +99,12 @@ export default function RecurringTransactionSettings({
             onPress={() => setShowDatePicker(true)}
           >
             <Text style={[styles.label, { color: theme.text.primary }]}>
-              End Date (Optional)
+              Data Final (Opcional)
             </Text>
             <Text style={[styles.dateText, { color: theme.text.secondary }]}>
               {recurringEndDate 
                 ? new Date(recurringEndDate).toLocaleDateString() 
-                : 'No end date'}
+                : 'Sem data final'}
             </Text>
           </Pressable>
 

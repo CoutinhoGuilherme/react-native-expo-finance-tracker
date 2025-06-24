@@ -1,30 +1,30 @@
 export const expenseCategories = [
-    'Food',
-    'Shopping',
-    'Transport',
-    'Housing',
-    'Entertainment',
-    'Bills',
-    'Healthcare',
-    'Education',
+    'Alimentação',
+    'Compras',
+    'Transporte',
+    'Reforma',
+    'Lazer',
+    'Contas',
+    'Saúde',
+    'Educação',
     'Utilities',
-    'Travel',
-    'Insurance',
-    'Personal Care',
-    'Gifts',
-    'Investments',
-    'Other'
+    'Viagem',
+    'Seguro',
+    'Beleza',
+    'Presente',
+    'Investimentos',
+    'Outros'
   ];
   
   export const incomeCategories = [
-    'Salary',
-    'Business',
-    'Investments',
+    'Salário',
+    'Negócios',
+    'Investimentos',
     'Freelance',
-    'Gifts',
-    'Rental',
-    'Refunds',
-    'Other'
+    'Presente',
+    'Aluguel',
+    'Reembolsos',
+    'Outros'
   ];
   
   // Helper function to get categories based on transaction type

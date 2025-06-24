@@ -8,12 +8,12 @@ import { expenseCategories } from '../constants/categories';
 type CategoryKey = keyof typeof CATEGORY_COLORS;
 
 const CATEGORY_COLORS = {
-  'Food': '#FF6B6B',
-  'Transport': '#45B7D1',
-  'Shopping': '#4ECDC4',
-  'Entertainment': '#FFEEAD',
-  'Bills': '#96CEB4',
-  'Other': '#D4A5A5',
+  'Alimentação': '#FF6B6B',
+  'Transporte': '#45B7D1',
+  'Compras': '#4ECDC4',
+  'Lazer': '#FFEEAD',
+  'Contas': '#96CEB4',
+  'Outros': '#D4A5A5',
 };
 
 const { width } = Dimensions.get('window');

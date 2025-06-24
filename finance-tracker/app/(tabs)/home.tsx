@@ -52,9 +52,55 @@ export default function Home() {
 
 const [selectedMonth, setSelectedMonth] = useState(new Date());
 
-const filteredByMonth = transactions.filter(transaction =>
-  isSameMonth(new Date(transaction.date), selectedMonth)
-)
+const filteredByMonth = transactions.flatMap(transaction => {
+  const transactionDate = new Date(transaction.date);
+  
+  // Transação recorrente sem data final → aparece no mês atual E no próximo
+  if (transaction.is_recurring && !transaction.end_date) {
+    const currentMonth = transactionDate;
+    const nextMonth = addMonths(transactionDate, 1);
+
+    // Verificações diretas sem variável intermediária
+    const result = [];
+    
+    if (isSameMonth(currentMonth, selectedMonth)) {
+      result.push({ 
+        ...transaction, 
+        isVirtual: false 
+      });
+    }
+    
+    if (isSameMonth(nextMonth, selectedMonth)) {
+      result.push({ 
+        ...transaction, 
+        date: nextMonth.toISOString(),
+        isVirtual: true 
+      });
+    }
+    
+    return result;
+  }
+
+  // Transação recorrente com data final
+  if (transaction.is_recurring && transaction.end_date) {
+    const endDate = new Date(transaction.end_date);
+    const startOfSelectedMonth = startOfMonth(selectedMonth);
+    const endOfSelectedMonth = endOfMonth(selectedMonth);
+    
+    if (
+      (transactionDate <= endOfSelectedMonth) && 
+      (endDate >= startOfSelectedMonth)
+    ) {
+      return [{ ...transaction, isVirtual: true }];
+    }
+    return [];
+  }
+
+  // Transações normais
+  return isSameMonth(transactionDate, selectedMonth) ? [transaction] : [];
+});
+
+const filteredTransactions = filteredByMonth;
 
 const handleMonthChange = (newDate: Date) => {
   setSelectedMonth(newDate);
@@ -82,13 +128,13 @@ useEffect(() => {
 }, []);
 
   
-  const filteredTransactions = transactions.filter(transaction => {
-  const transactionDate = new Date(transaction.date);
-  return (
-    transactionDate.getMonth() === selectedMonth.getMonth() &&
-    transactionDate.getFullYear() === selectedMonth.getFullYear()
-  );
-});
+//   const filteredTransactions = transactions.filter(transaction => {
+//   const transactionDate = new Date(transaction.date);
+//   return (
+//     transactionDate.getMonth() === selectedMonth.getMonth() &&
+//     transactionDate.getFullYear() === selectedMonth.getFullYear()
+//   );
+// });
 
 const totals = filteredTransactions.reduce(
   (acc, transaction) => {

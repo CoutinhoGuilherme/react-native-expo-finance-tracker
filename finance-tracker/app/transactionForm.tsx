@@ -10,11 +10,11 @@ import { Ionicons } from '@expo/vector-icons';
 import RecurringTransactionSettings from '../components/RecurringTransactionSettings';
 
 const expenseCategories = [
-  'Food', 'Transport', 'Entertainment', 'Shopping', 'Bills', 'Other'
+  'Alimentação', 'Transporte', 'Lazer', 'Compras', 'Contas', 'Outros'
 ];
 
 const incomeCategories = [
-  'Salary', 'Freelance', 'Investment', 'Gift', 'Other'
+  'Salário', 'Freelance', 'Investimentos', 'Presente', 'Outros'
 ];
 
 const TRANSACTION_COLORS = {
@@ -268,7 +268,7 @@ const handleSubmit = async () => {
             )}
           <TextInput
             style={[styles.titleInput, { color: theme.text.primary }]}
-            placeholder="Transaction Title"
+            placeholder="Descrição"
             placeholderTextColor={theme.text.secondary}
             value={title}
             onChangeText={setTitle}
@@ -301,7 +301,7 @@ const handleSubmit = async () => {
           />
         )}
 
-        <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>Categories</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>Categorias</Text>
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false}
@@ -330,7 +330,7 @@ const handleSubmit = async () => {
 
 <View style={styles.sectionContainer}>
   <Text style={[styles.sectionTitle, { color: theme.text.primary }]}>
-    Recurring Settings
+    Configurações Recorrência
   </Text>
   <RecurringTransactionSettings
     isRecurring={isRecurring}

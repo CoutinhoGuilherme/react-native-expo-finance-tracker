@@ -89,7 +89,7 @@ export default function UserProfileScreen() {
     }, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    Alert.alert('Sucesso', 'Dados atualizados com sucesso.');
+    Alert.alert('Sucesso', 'Dados atualizados com sucesso.', [{text: 'OK', onPress: () => router.back}]);
   } catch (error) {
     console.error('Erro ao atualizar usuário:', error);
     Alert.alert('Erro', 'Não foi possível atualizar os dados do usuário.');
